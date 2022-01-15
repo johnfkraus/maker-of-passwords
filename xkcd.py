@@ -15,7 +15,7 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100, word
             words = [word.strip().lower() for word in f if len(word) <= maximum_word_length and word.lower().startswith(words_start_with)]
             return words
 
-def create_xkcd_password(filename, num_words_in_password, numbered_list=False, maximum_word_length=100, words_start_with="N/A"):
+def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019.txt", num_words_in_password=7, numbered_list=False, maximum_word_length=100, words_start_with="N/A"):
     with open(filename) as f:
         words = create_wordlist(filename, numbered_list, maximum_word_length, words_start_with)
         # words = [word.strip().lower() for word in f if len(word) <= maximum_word_length and word.startswith('Q')]
