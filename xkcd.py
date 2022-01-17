@@ -27,7 +27,12 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100, word
     [words.append(x) for x in temp if x not in words]
     return words   
 
-def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019.txt", num_words_in_password=7, numbered_list=False, maximum_word_length=100, words_start_with="N/A"):
+def Sorting(lst):
+    lst2 = sorted(lst, key=len)
+    return lst2
+
+
+def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019.txt", num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=100, words_start_with="N/A"):
     with open(filename) as f:
         words = create_wordlist(filename, numbered_list, maximum_word_length, words_start_with)
         # words = [word.strip().lower() for word in f if len(word) <= maximum_word_length and word.startswith('Q')]
@@ -118,6 +123,7 @@ def main(args=sys.argv[1:]):
                         "--flag",
                         help="Specify a flag",
                         action="store_true")
+
     parser.add_argument("--rating",
                         help="An option with a limited range of values",
                         choices=[1, 2, 3],
@@ -125,9 +131,11 @@ def main(args=sys.argv[1:]):
 
     # Allow --day and --night options, but not together.
     group = parser.add_mutually_exclusive_group()
+
     group.add_argument("--day",
                        help="mutually exclusive option",
                        action="store_true")
+
     group.add_argument("--night",
                        help="mutually exclusive option",
                        action="store_true")
@@ -154,7 +162,7 @@ def main(args=sys.argv[1:]):
         # password = create_xkcd_password(wordlist, number_of_words_in_password,
         #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
         password = create_xkcd_password(wordlist, int(args.numwords),
-                                         maximum_word_length=args.maxwordlen, words_start_with=words_start_with)
+                                         maximum_word_length=args.maxwordlen, contains=args.contains)
 
         print(password)
         print("password = " + password[0])
