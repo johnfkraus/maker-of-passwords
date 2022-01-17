@@ -87,9 +87,6 @@ numbered_list = False  # list has a number in the first column = True
 #     #print( 'Input file is "', inputfile)
     
     
-
-
-
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()  # (prog=_program)
 
@@ -151,13 +148,13 @@ def main(args=sys.argv[1:]):
     for n in range(0, args.num):
         wordlist = "wordlists/Collins_Scrabble_Words_2019.txt"
         # number_of_words_in_password = 7
-        maximum_word_length = 8
+        # maximum_word_length = args.maxwordlen
 
         words_start_with = "z"
         # password = create_xkcd_password(wordlist, number_of_words_in_password,
         #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
         password = create_xkcd_password(wordlist, int(args.numwords),
-                                         maximum_word_length=maximum_word_length, words_start_with=words_start_with)
+                                         maximum_word_length=args.maxwordlen, words_start_with=words_start_with)
 
         print(password)
         print("password = " + password[0])
