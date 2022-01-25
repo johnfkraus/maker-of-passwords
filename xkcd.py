@@ -11,22 +11,26 @@ num_words_in_pw = 4
 word_list_filename = 'wordlists/eff_large_wordlist.txt'
 
 def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
-                    contains=None, words_start_with=None,  words_end_with=None):
+                    contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
     templist = None
     with open(filename) as f:
         if contains == None and words_start_with == None and words_end_with == None:
             templist = [word.strip().lower()
                     for word in f if len(word) <= maximum_word_length]
         else: 
-            contains = contains.lower()
-            templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower()]
-        
+            if notcontain == None:
+                contains = contains.lower()
+                templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower()]
+            else:
+                notcontain = notcontain.lower()
+                templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
+
+
         if numbered_list == True:
             words2 = [word.split()[1] for word in templist]
             return words2
         else:
             return templist
-
 
     # # using list comprehension to remove duplicated from list
     # words = []
@@ -38,11 +42,12 @@ def Sorting(lst):
     return lst2
 
 
-def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019.txt", 
-    num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=100, words_start_with=None, words_end_with=None):
+def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt", 
+    num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=100, words_start_with=None, words_end_with=None, notcontain=None):
+    print("notcontain = ", notcontain)
     with open(filename) as f:
         words = create_wordlist(filename, numbered_list,
-                                maximum_word_length, contains, words_start_with)
+                                maximum_word_length, contains, words_start_with, notcontain=notcontain)
         word_list_length = len(words)
         possible_combinations = math.pow(word_list_length,num_words_in_password)
         entropy_bits = round(math.log(possible_combinations,2))
@@ -118,6 +123,10 @@ def main(args=sys.argv[1:]):
                         help="list of words to select from",
                         type=str, default="wordlists/Collins_Scrabble_Words_2019.txt")
 
+    parser.add_argument("-n", "--notcontain",
+                        help="word should not contain this letter",
+                        type=str, default="u")
+
     # parser.add_argument("-f",
     #                     "--flag",
     #                     help="Specify a flag",
@@ -137,7 +146,7 @@ def main(args=sys.argv[1:]):
 
     group.add_argument("-c", "--contains",
                         help="words in password should contain one of these letters",
-                        type=str, default = "z")
+                        type=str, default = "q")
 
     group.add_argument("-e", "--endswith",
                         help="words in password should end with one of these letters",
@@ -153,7 +162,7 @@ def main(args=sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    print(args)
+    print("args = ", args)
 
     for n in range(0, args.num):
         #wordlist = "wordlists/Collins_Scrabble_Words_2019.txt"
@@ -164,7 +173,7 @@ def main(args=sys.argv[1:]):
         #å password = create_xkcd_password(wordlist, number_of_words_in_password,
         #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
         password = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
-                                         maximum_word_length=args.maxwordlen, contains=args.contains)
+                                         maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
 
         print(password)
         print("password = " + password[0])
