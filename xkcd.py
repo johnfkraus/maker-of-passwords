@@ -3,11 +3,10 @@ import sys, getopt
 import math
 import argparse
 from clint.textui import puts, indent, colored
+from password_strength import PasswordStats
+from password_strength import PasswordPolicy
 
-# On standard Linux systems, use a convenient dictionary file.
-# Other platforms may need to provide their own word-list.
-
-num_words_in_pw = 4
+# num_words_in_pw = 4
 word_list_filename = 'wordlists/eff_large_wordlist.txt'
 
 def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
@@ -41,20 +40,48 @@ def Sorting(lst):
     lst2 = sorted(lst, key=len)
     return lst2
 
+def get_pw_strength(password):
+    # assume no space between words in password
+    password = password.replace(" ","")
+    stats = PasswordStats(password)
+
+    print(password, round(stats.entropy_bits),
+          stats.entropy_density, stats.strength())
+    print("alphabet = ", stats.alphabet)
+    print("alphabet_cardinality = ", stats.alphabet_cardinality)
+    print("char_categories = ", stats.char_categories)
+    print("char_categories_detailed = ", stats.char_categories_detailed)
+    print("combinations = ", "{:,}".format(stats.combinations))
+    print("entropy_density = ", stats.entropy_density)
+    print("26 letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
+
+
+
+def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
+    # num_letters_in_alphabet = 26
+    password_len = len(password)
+    # password_len = 2
+    possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
+    print("possible_combinations of letters = ", "{:,}".format(possible_combinations_of_letters), bin(possible_combinations_of_letters))
+    # how many binary digts are required to encode the number of combinations
+    entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
+    return entropy_bits
+
+
 
 def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt", 
-    num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=100, words_start_with=None, words_end_with=None, notcontain=None):
+    num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=8, words_start_with=None, words_end_with=None, notcontain=None):
     print("notcontain = ", notcontain)
     with open(filename) as f:
         words = create_wordlist(filename, numbered_list,
                                 maximum_word_length, contains, words_start_with, notcontain=notcontain)
         word_list_length = len(words)
-        possible_combinations = math.pow(word_list_length,num_words_in_password)
-        entropy_bits = round(math.log(possible_combinations,2))
+        possible_combinations = int(math.pow(word_list_length,num_words_in_password))
+        entropy_bits = math.ceil(math.log(possible_combinations,2))
         print("number of words in password = " + str(num_words_in_password))
         print("number of words in (filtered) word list \"" + filename + "\" = " + str(word_list_length))
         print("maximum word length = " + str(maximum_word_length))
-        print("number of possible combinations of words = " + str(possible_combinations))
+        print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
         print("password entropy bits = " + str(entropy_bits))
         # if numbered_list == True:
         #     words2 = [word.split()[1] for word in words]
@@ -70,39 +97,7 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
 
 numbered_list = False  # list has a number in the first column = True
 
-# def main(argv):
-#     parser = argparse.ArgumentParser(description='Process some integers.')
-#     parser.add_argument("-n")
-#     try:
-#         opts, args = getopt.getopt(argv,"nhi:o:",["n=","l=", "s=", "e="])
-#         print(opts, args)
-#     except getopt.GetoptError:  
-#         print('xkcd.py -i <inputfile> -o <outputfile>')
-#         sys.exit(2)
-#     startswith = []
-#     endswith = []
-#     contains = []
-#     num = 0
-#     for opt, arg in opts:
-#         if opt == '-h':
-#             print('xkcd.py -n <number of passwords to generate> -s <words start with> -e <words end with letter> -c <words contain letters>')
-#             sys.exit()
-#         elif opt in ("n", "--num"):
-#             num = arg
-#             print("num = ", num)
-#         elif opt in ("-s", "--startswith"):
-#             startswitharg = arg
-#             if startswitharg.contains(","):
-#                 startswith.append(startswitharg.split(","))
-#             print(startswith)
-#         elif opt in ("-e", "--endswith"):
-#             endswitharg = arg
-#             if endswitharg.contains(","):
-#                 endswith.append(endswitharg.split(","))
-#             print(endswith)
 
-#     #print( 'Input file is "', inputfile)
-    
     
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()  # (prog=_program)
@@ -125,7 +120,7 @@ def main(args=sys.argv[1:]):
 
     parser.add_argument("-n", "--notcontain",
                         help="word should not contain this letter",
-                        type=str, default="u")
+                        type=str, default=None)
 
     # parser.add_argument("-f",
     #                     "--flag",
@@ -146,7 +141,7 @@ def main(args=sys.argv[1:]):
 
     group.add_argument("-c", "--contains",
                         help="words in password should contain one of these letters",
-                        type=str, default = "q")
+                        type=str, default = None)
 
     group.add_argument("-e", "--endswith",
                         help="words in password should end with one of these letters",
@@ -172,13 +167,13 @@ def main(args=sys.argv[1:]):
         #words_start_with = "z"
         #å password = create_xkcd_password(wordlist, number_of_words_in_password,
         #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
-        password = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
+        password_tuple = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
 
-        print(password)
-        print("password = " + password[0])
-        print("entropy bits = " + str(password[1]))
-
+        print("password tuple = ", password_tuple)
+        print("password = " + password_tuple[0])
+        print("entropy bits = " + str(password_tuple[1]))
+        get_pw_strength(password_tuple[0])
 
 
 if __name__ == '__main__':
@@ -189,3 +184,35 @@ if __name__ == '__main__':
 #     print("main", sys.argv)
 #     main(sys.argv[1:])
 
+# def main(argv):
+#     parser = argparse.ArgumentParser(description='Process some integers.')
+#     parser.add_argument("-n")
+#     try:
+#         opts, args = getopt.getopt(argv,"nhi:o:",["n=","l=", "s=", "e="])
+#         print(opts, args)
+#     except getopt.GetoptError:
+#         print('xkcd.py -i <inputfile> -o <outputfile>')
+#         sys.exit(2)
+#     startswith = []
+#     endswith = []
+#     contains = []
+#     num = 0
+#     for opt, arg in opts:
+#         if opt == '-h':
+#             print('xkcd.py -n <number of passwords to generate> -s <words start with> -e <words end with letter> -c <words contain letters>')
+#             sys.exit()
+#         elif opt in ("n", "--num"):
+#             num = arg
+#             print("num = ", num)
+#         elif opt in ("-s", "--startswith"):
+#             startswitharg = arg
+#             if startswitharg.contains(","):
+#                 startswith.append(startswitharg.split(","))
+#             print(startswith)
+#         elif opt in ("-e", "--endswith"):
+#             endswitharg = arg
+#             if endswitharg.contains(","):
+#                 endswith.append(endswitharg.split(","))
+#             print(endswith)
+
+#     #print( 'Input file is "', inputfile)
