@@ -3,6 +3,7 @@ import secrets
 import sys, getopt
 import math
 import argparse
+from typing_extensions import final
 from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
@@ -57,15 +58,75 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100,
 
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
-    templist = None
+    templist_length = None
+    templist_contains = []
+    templist_notcontain = []
+    templist_words_start_with = []
+    final_word_list = None
     wordlist = None
+    if contains:
+        contains = contains.strip().lower()
+    if notcontain:
+        notcontain = notcontain.strip().lower()
     with open(filename) as f:
-        if contains == None and words_start_with == None and words_end_with == None:
-            templist = [line.split("\t") for line in f if len(line.split("\t")[0].strip()) <= maximum_word_length]
+        # if contains == None and words_start_with == None and words_end_with == None and notcontain == None:
+        original_list_unfiltered = [line.split("\t") for line in f]
+        print("len unfiltered word list = ", len(original_list_unfiltered))
+        final_word_list = [pass_def for pass_def in original_list_unfiltered if
+             len(pass_def[0].strip()) <= maximum_word_length]
+        print("len word list after word length filter (", maximum_word_length, ") = ", len(final_word_list))
+
+        for pass_def in final_word_list:
+            pass_def[0] = pass_def[0].strip().lower()
+            pass_def[1] = pass_def[1].strip()
+
+        if contains:
+            if contains in pass_def[0]:
+                templist_contains.append(pass_def)
+            final_word_list = templist_contains
+        print("len word list after contains filter (", contains, ") = ",
+              len(final_word_list))
+
+        if notcontain:
+            for pass_def in final_word_list:
+                if not notcontain in pass_def[0]:
+                    templist_notcontain.append(pass_def)
+                final_word_list = templist_notcontain
+            print("len word list after noncontain filter (", notcontain, ") = ",
+                  len(final_word_list))
 
 
+        # replace
+        # for pass_def in templist_contains:
+        #     if notcontain:
+        #         if not notcontain in pass_def[0]:
+        #             templist_notcontain.append(pass_def)
+        #         final_word_list = templist_notcontain
+        #     else:
+        #         templist_notcontain = templist_contains
+        # print("len templist_notcontain (", notcontain, ") = ",
+        #       len(templist_notcontain))
 
-    return templist
+        if words_start_with:
+            for pass_def in templist_notcontain:
+                if pass_def[0][0] == words_start_with:
+                    templist_words_start_with.append(pass_def)
+            print("len templist_notcontain (", notcontain, ") = ",
+                  len(templist_notcontain))
+            final_word_list = templist_words_start_with
+            
+    print("len final_word_list = ",
+            len(final_word_list))
+
+            # templist_words_start_with = templist_notcontain 
+            # templist = [line.split("\t") for line in f if len(
+            #     line.split("\t")[0].strip()) <= maximum_word_length and 
+            #     contains in line.split("\t")[0].strip().lower() and 
+            #     not notcontain in line.split("\t")[0].strip().lower()]
+
+
+    return final_word_list
+    # return templist_notcontain
             # for line in f:
             #     templist = line.split("\t")
             # templist = [word.strip().lower()
@@ -180,8 +241,6 @@ def main(args=sys.argv[1:]):
     wordlists = ["wordlists/Collins_Scrabble_Words_2019.txt",
                  "wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
-
-
     parser = argparse.ArgumentParser()  # (prog=_program)
 
     parser.add_argument("--num",
@@ -202,7 +261,7 @@ def main(args=sys.argv[1:]):
 
     parser.add_argument("-n", "--notcontain",
                         help="word should not contain this letter",
-                        type=str, default=None)
+                        type=str, default="u")
 
     # parser.add_argument("-f",
     #                     "--flag",

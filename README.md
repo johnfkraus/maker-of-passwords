@@ -2,6 +2,12 @@
 
 https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
 
+Further reading:
+https://pypi.org/project/password-strength/#description
+
+https://en.wikipedia.org/wiki/Password_strength
+
+
 
 3.10.1
  3.10.1 Documentation » The Python Standard Library » Cryptographic Services » secrets — Generate secure random numbers for managing secrets
