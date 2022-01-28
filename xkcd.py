@@ -1,3 +1,4 @@
+import collections
 import secrets
 import sys, getopt
 import math
@@ -9,13 +10,35 @@ from password_strength import PasswordPolicy
 # num_words_in_pw = 4
 word_list_filename = 'wordlists/eff_large_wordlist.txt'
 
+def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
+                    #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
+    worddict = {}
+    with open(filename) as f:
+        for word in f:
+            word = word.strip().lower()
+            word_len = len(word)
+            if word_len in worddict.keys():
+                worddict[word_len] = worddict[word_len] + 1
+            else:
+                worddict[word_len] = 1
+
+
+    sortedworddict = collections.OrderedDict(sorted(worddict.items()))
+    total_words = 0
+    cumulative_words = 0
+    for key in sortedworddict.keys():
+        total_words = total_words + worddict[key]
+        cumulative_words = cumulative_words + worddict[key]
+        print(key, " : ", worddict[key], " cumul: ", cumulative_words)
+    print("Total : ", total_words)
+
 def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
     templist = None
     with open(filename) as f:
         if contains == None and words_start_with == None and words_end_with == None:
             templist = [word.strip().lower()
-                    for word in f if len(word) <= maximum_word_length]
+                    for word in f if len(word.strip().lower()) <= maximum_word_length]
         else: 
             if notcontain == None:
                 contains = contains.lower()
@@ -62,9 +85,10 @@ def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
     password_len = len(password)
     # password_len = 2
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
-    print("possible_combinations of letters = ", "{:,}".format(possible_combinations_of_letters), bin(possible_combinations_of_letters))
-    # how many binary digts are required to encode the number of combinations
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
+    print("65 possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    # how many binary digts are required to encode the number of combinations
+
     return entropy_bits
 
 
@@ -72,17 +96,19 @@ def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
 def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt", 
     num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=8, words_start_with=None, words_end_with=None, notcontain=None):
     print("notcontain = ", notcontain)
+    create_wordlist_profile(filename)
     with open(filename) as f:
         words = create_wordlist(filename, numbered_list,
                                 maximum_word_length, contains, words_start_with, notcontain=notcontain)
         word_list_length = len(words)
         possible_combinations = int(math.pow(word_list_length,num_words_in_password))
         entropy_bits = math.ceil(math.log(possible_combinations,2))
+        print("number of words in (filtered) word list \"" + filename +
+              "\" = " + "{:,}".format(word_list_length))
         print("number of words in password = " + str(num_words_in_password))
-        print("number of words in (filtered) word list \"" + filename + "\" = " + str(word_list_length))
-        print("maximum word length = " + str(maximum_word_length))
+        print("maximum word length (no. of characters) = " + str(maximum_word_length))
         print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
-        print("password entropy bits = " + str(entropy_bits))
+        print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
         # if numbered_list == True:
         #     words2 = [word.split()[1] for word in words]
         #     password = ' '.join(secrets.choice(words2) for i in range(num_words_in_password)).lower()
@@ -111,7 +137,7 @@ def main(args=sys.argv[1:]):
                         type=int, default = 6)
 
     parser.add_argument("--maxwordlen",
-                        help="max number of characters in each word",
+                        help="max number of characters per word",
                         type=int, default=8)
 
     parser.add_argument("--wordlist",
