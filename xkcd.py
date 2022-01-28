@@ -27,6 +27,8 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
     total_words = 0
     cumulative_words = 0
     for key in sortedworddict.keys():
+        if key > 6:
+            return
         total_words = total_words + worddict[key]
         cumulative_words = cumulative_words + worddict[key]
         print(key, " : ", worddict[key], " cumul: ", cumulative_words)
@@ -46,13 +48,44 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100,
             else:
                 notcontain = notcontain.lower()
                 templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
-
-
         if numbered_list == True:
             words2 = [word.split()[1] for word in templist]
             return words2
         else:
             return templist
+
+
+def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
+                    contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
+    templist = None
+    wordlist = None
+    with open(filename) as f:
+        if contains == None and words_start_with == None and words_end_with == None:
+            templist = [line.split("\t") for line in f if len(line.split("\t")[0].strip()) <= maximum_word_length]
+
+
+
+    return templist
+            # for line in f:
+            #     templist = line.split("\t")
+            # templist = [word.strip().lower()
+            #             for word in f if len(word.strip().lower()) <= maximum_word_length]
+        # else:
+        #     if notcontain == None:
+        #         contains = contains.lower()
+        #         templist = [word.strip().lower() for word in f if len(
+        #             word) <= maximum_word_length and contains in word.lower()]
+        #     else:
+        #         notcontain = notcontain.lower()
+        #         templist = [word.strip().lower() for word in f if len(
+        #             word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
+        # if numbered_list == True:
+        #     words2 = [word.split()[1] for word in templist]
+        #     return words2
+        # else:
+        #     return templist
+
+
 
     # # using list comprehension to remove duplicated from list
     # words = []
@@ -98,24 +131,42 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
     print("notcontain = ", notcontain)
     create_wordlist_profile(filename)
     with open(filename) as f:
-        words = create_wordlist(filename, numbered_list,
-                                maximum_word_length, contains, words_start_with, notcontain=notcontain)
-        word_list_length = len(words)
-        possible_combinations = int(math.pow(word_list_length,num_words_in_password))
-        entropy_bits = math.ceil(math.log(possible_combinations,2))
-        print("number of words in (filtered) word list \"" + filename +
-              "\" = " + "{:,}".format(word_list_length))
-        print("number of words in password = " + str(num_words_in_password))
-        print("maximum word length (no. of characters) = " + str(maximum_word_length))
-        print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
-        print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
-        # if numbered_list == True:
-        #     words2 = [word.split()[1] for word in words]
-        #     password = ' '.join(secrets.choice(words2) for i in range(num_words_in_password)).lower()
-        # else:
-        password = ' '.join(secrets.choice(words) for i in range(num_words_in_password)).lower()
+        if True:
+            pwlist = []
+            password = ''
+            words = create_wordlist_with_defns(filename, numbered_list,
+                                    maximum_word_length, contains, words_start_with, notcontain=notcontain)
+            for i in range(num_words_in_password):
+                pwlist.append(secrets.choice(words))
 
-    return password, entropy_bits, word_list_length, possible_combinations
+            for i in range(len(pwlist)):
+                password = password + pwlist[i][0].strip().lower() + ' '
+                password = password.lower()
+
+            print("password = ", password)
+            for i in range(len(pwlist)):
+                print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
+
+
+        else:
+            words = create_wordlist(filename, numbered_list,
+                                maximum_word_length, contains, words_start_with, notcontain=notcontain)
+            word_list_length = len(words)
+            possible_combinations = int(math.pow(word_list_length,num_words_in_password))
+            entropy_bits = math.ceil(math.log(possible_combinations,2))
+            print("number of words in (filtered) word list \"" + filename +
+                "\" = " + "{:,}".format(word_list_length))
+            print("number of words in password = " + str(num_words_in_password))
+            print("maximum word length (no. of characters) = " + str(maximum_word_length))
+            print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
+            print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
+            # if numbered_list == True:
+            #     words2 = [word.split()[1] for word in words]
+            #     password = ' '.join(secrets.choice(words2) for i in range(num_words_in_password)).lower()
+            # else:
+            password = ' '.join(secrets.choice(words) for i in range(num_words_in_password)).lower()
+
+            return password, entropy_bits, word_list_length, possible_combinations
 
 # for n in range(0, 10):
 #     password_and_entropy_bits = create_xkcd_password( 'wordlists/eff_large_wordlist.txt', 8, True)
@@ -126,6 +177,11 @@ numbered_list = False  # list has a number in the first column = True
 
     
 def main(args=sys.argv[1:]):
+    wordlists = ["wordlists/Collins_Scrabble_Words_2019.txt",
+                 "wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
+
+
+
     parser = argparse.ArgumentParser()  # (prog=_program)
 
     parser.add_argument("--num",
@@ -142,7 +198,7 @@ def main(args=sys.argv[1:]):
 
     parser.add_argument("--wordlist",
                         help="list of words to select from",
-                        type=str, default="wordlists/Collins_Scrabble_Words_2019.txt")
+                        type=str, default=wordlists[1])
 
     parser.add_argument("-n", "--notcontain",
                         help="word should not contain this letter",
@@ -193,13 +249,13 @@ def main(args=sys.argv[1:]):
         #words_start_with = "z"
         #å password = create_xkcd_password(wordlist, number_of_words_in_password,
         #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
-        password_tuple = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
+        password = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
 
-        print("password tuple = ", password_tuple)
-        print("password = " + password_tuple[0])
-        print("entropy bits = " + str(password_tuple[1]))
-        get_pw_strength(password_tuple[0])
+        #print("password tuple = ", password_tuple)
+        # print("password = ", password)
+        # print("entropy bits = " + str(password_tuple[1]))
+        # get_pw_strength(password_tuple[0])
 
 
 if __name__ == '__main__':
