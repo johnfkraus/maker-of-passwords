@@ -11,17 +11,20 @@ In not already installed, install virtualenv:
 pip3 install -U virtualenv
 in the project root directory run:
 virtualenv venv
+source venv/bin/activate
 
+
+
+
+git clone https://github.com/username/your-awesome-code.git
+cd your-awesome-code
+source venv/bin/activate
+pip install -r requirements.txt
+python run.py
 
 
 
 https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
-
-Further reading:
-https://pypi.org/project/password-strength/#description
-
-https://en.wikipedia.org/wiki/Password_strength
-
 
 
 3.10.1
