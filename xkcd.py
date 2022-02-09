@@ -3,6 +3,7 @@ import secrets
 import sys, getopt
 import math
 import argparse
+from num2words import num2words
 from typing_extensions import final
 from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
@@ -170,7 +171,7 @@ def get_pw_strength(password):
     print("char_categories_detailed = ", stats.char_categories_detailed)
     print("combinations = ", "{:,}".format(stats.combinations))
     print("entropy_density = ", stats.entropy_density)
-    print("26 letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
+    print("26-letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
 
 
 
@@ -180,15 +181,35 @@ def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
     # password_len = 2
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-    print("65 possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    print("possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    print(num2words(possible_combinations_of_letters))
     # how many binary digts are required to encode the number of combinations
-
     return entropy_bits
 
 
+def get_xkcd_entropy(words, num_words_in_password):
+    word_list_length = len(words)
+    possible_combinations = int(math.pow(word_list_length,num_words_in_password))
+    entropy_bits = math.ceil(math.log(possible_combinations,2))
+    print("number of words in (filtered) word list = " + "{:,}".format(word_list_length))
+    print("number of words in password = " + str(num_words_in_password))
+    # print("maximum word length (no. of characters) = " + str(maximum_word_length))
+    print("number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
+
+    print(num2words(possible_combinations))
+
+    print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
+
 
 def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt", 
-    num_words_in_password=7, numbered_list=False, contains=None, maximum_word_length=8, words_start_with=None, words_end_with=None, notcontain=None):
+        num_words_in_password=7, 
+        numbered_list=False, 
+        contains=None,
+        maximum_word_length=8,
+        words_start_with=None, 
+        words_end_with=None,
+        notcontain=None):
+
     print("notcontain = ", notcontain)
     create_wordlist_profile(filename)
     with open(filename) as f:
@@ -207,6 +228,9 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
             print("password = ", password)
             for i in range(len(pwlist)):
                 print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
+
+            get_xkcd_entropy(words, num_words_in_password)
+            get_pw_strength(password)
 
 
         else:
@@ -234,34 +258,32 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
 #     print(n, password_and_entropy_bits[1], password_and_entropy_bits[0])
 
 numbered_list = False  # list has a number in the first column = True
-
-
     
 def main(args=sys.argv[1:]):
     wordlists = ["wordlists/Collins_Scrabble_Words_2019.txt",
                  "wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
-    parser = argparse.ArgumentParser()  # (prog=_program)
+    parser = argparse.ArgumentParser()
 
     parser.add_argument("--num",
-                        help="number of passwords to generate",
+                        help="number of passwords to generate, default=1",
                         type=int, default=1)
 
     parser.add_argument("--numwords",
-                        help="number of words in each password",
+                        help="number of words in each password, default=6",
                         type=int, default = 6)
 
     parser.add_argument("--maxwordlen",
-                        help="max number of characters per word",
+                        help="max number of characters per word, default=8",
                         type=int, default=8)
 
     parser.add_argument("--wordlist",
-                        help="list of words to select from",
+                        help="path to list of words from which to select",
                         type=str, default=wordlists[1])
 
     parser.add_argument("-n", "--notcontain",
                         help="word should not contain this letter",
-                        type=str, default="u")
+                        type=str, default=None)
 
     # parser.add_argument("-f",
     #                     "--flag",
@@ -287,14 +309,6 @@ def main(args=sys.argv[1:]):
     group.add_argument("-e", "--endswith",
                         help="words in password should end with one of these letters",
                         type=str, default = None)
-
-    # group.add_argument("--day",
-    #                    help="mutually exclusive option",
-    #                    action="store_true")
-
-    # group.add_argument("--night",
-    #                    help="mutually exclusive option",
-    #                    action="store_true")
 
     args = parser.parse_args(args)
 
