@@ -1,13 +1,14 @@
 # maker-of-passwords
 
 ## To run this project
-You must have python3 and pip3 installed.
+You must have python3 and pip3 installed.  How to tell?
 ``` 
 python3 --version
 pip3 --version
 ```
-If not use Google to find out how to install python3 and pip3 on your machine.
-In not already installed, install virtualenv:
+If not, use a Google search to find out how to install python3 and pip3 on your machine.
+
+If virtualenv is not already installed, install virtualenv:
 pip3 install -U virtualenv
 in the project root directory run:
 virtualenv venv

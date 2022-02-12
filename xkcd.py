@@ -72,7 +72,10 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     with open(filename) as f:
         # if contains == None and words_start_with == None and words_end_with == None and notcontain == None:
         original_list_unfiltered = [line.split("\t") for line in f]
-        print("len unfiltered word list = ", len(original_list_unfiltered))
+        print("len unfiltered word list             = ", "{:,}".format(len(original_list_unfiltered)))
+
+        print("len unfiltered word list".ljust(43)," = ", "{:,}".format(len(original_list_unfiltered)))
+
         final_word_list = [pass_def for pass_def in original_list_unfiltered if
              len(pass_def[0].strip()) <= maximum_word_length]
         print("len word list after word length filter (", maximum_word_length, ") = ", len(final_word_list))
@@ -85,6 +88,8 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             if contains in pass_def[0]:
                 templist_contains.append(pass_def)
             final_word_list = templist_contains
+        
+        label = "len word list after contains filter (" , contains, ") = ",
         print("len word list after contains filter (", contains, ") = ",
               len(final_word_list))
 
@@ -93,6 +98,8 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                 if not notcontain in pass_def[0]:
                     templist_notcontain.append(pass_def)
                 final_word_list = templist_notcontain
+
+            label = "len word list after noncontain filter (", notcontain, ")"
             print("len word list after noncontain filter (", notcontain, ") = ",
                   len(final_word_list))
 
@@ -210,7 +217,7 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
         words_end_with=None,
         notcontain=None):
 
-    print("notcontain = ", notcontain)
+    # print("notcontain = ", notcontain)
     create_wordlist_profile(filename)
     with open(filename) as f:
         if True:
@@ -260,6 +267,12 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
 numbered_list = False  # list has a number in the first column = True
     
 def main(args=sys.argv[1:]):
+
+    print("\n######################## MAKER OF PASSWORDS #########################\n")
+
+    print("Not implemented: --contains parameter")
+    print("Passwords composed of multiple dictionary words are assumed to have no delimiters between the words.")
+
     wordlists = ["wordlists/Collins_Scrabble_Words_2019.txt",
                  "wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
@@ -282,18 +295,8 @@ def main(args=sys.argv[1:]):
                         type=str, default=wordlists[1])
 
     parser.add_argument("-n", "--notcontain",
-                        help="word should not contain this letter",
-                        type=str, default=None)
-
-    # parser.add_argument("-f",
-    #                     "--flag",
-    #                     help="Specify a flag",
-    #                     action="store_true")
-
-    # parser.add_argument("--rating",
-    #                     help="An option with a limited range of values",
-    #                     choices=[1, 2, 3],
-    #                     type=int)
+                        help="words should not contain this single letter",
+                        type=str, default="u")
 
     # Allow --day and --night options, but not together.
     group = parser.add_mutually_exclusive_group()
@@ -302,6 +305,7 @@ def main(args=sys.argv[1:]):
                         help="words in password should start with one of these letters",
                         type=str, default = None)
 
+    # not implemented apparently
     group.add_argument("-c", "--contains",
                         help="words in password should contain one of these letters",
                         type=str, default = None)
@@ -315,20 +319,8 @@ def main(args=sys.argv[1:]):
     print("args = ", args)
 
     for n in range(0, args.num):
-        #wordlist = "wordlists/Collins_Scrabble_Words_2019.txt"
-        # number_of_words_in_password = 7
-        # maximum_word_length = args.maxwordlen
-
-        #words_start_with = "z"
-        #å password = create_xkcd_password(wordlist, number_of_words_in_password,
-        #                                 maximum_word_length=maximum_word_length, words_start_with=words_start_with)
         password = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
-
-        #print("password tuple = ", password_tuple)
-        # print("password = ", password)
-        # print("entropy bits = " + str(password_tuple[1]))
-        # get_pw_strength(password_tuple[0])
 
 
 if __name__ == '__main__':
