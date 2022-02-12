@@ -21,3 +21,8 @@ Using the wc command:
     1296    2592   17258 eff_short_wordlist_2_0.txt
   466550  466550 4862992 words.txt
  1035919 3501508 26188316 total
+
+
+#### Sources of word lists include:
+
+https://raw.githubusercontent.com/dwyl/english-words/master/words.txt

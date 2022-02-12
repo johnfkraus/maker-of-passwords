@@ -9,43 +9,37 @@ pip3 --version
 If not, use a Google search to find out how to install python3 and pip3 on your machine.
 
 If virtualenv is not already installed, install virtualenv:
+
 pip3 install -U virtualenv
 in the project root directory run:
 virtualenv venv
 source venv/bin/activate
 
+### Summary of how to run:
 
-
-
-git clone https://github.com/username/your-awesome-code.git
-cd your-awesome-code
+git clone https://github.com/johnfkraus/maker-of-passwords.git
+cd maker-of-passwords
 source venv/bin/activate
 pip install -r requirements.txt
-python run.py
+python xkdc.py
 
 
+### Python secrets module
 
-https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
+This program's random word selection depends on the python secrets module.  Excerpts from the documentation follow.
 
-
-3.10.1
- 3.10.1 Documentation » The Python Standard Library » Cryptographic Services » secrets — Generate secure random numbers for managing secrets
-Quick search
-  |
-secrets — Generate secure random numbers for managing secrets
-New in version 3.6.
-
-Source code: Lib/secrets.py
+Some of the documentation copied and pasted below does not relate directly to this program, but might pertain to future development.
 
 The secrets module is used for generating cryptographically strong random numbers suitable for managing data such as passwords, account authentication, security tokens, and related secrets.
 
 In particular, secrets should be used in preference to the default pseudo-random number generator in the random module, which is designed for modelling and simulation, not security or cryptography.
 
 See also PEP 506
-Random numbers
+
 The secrets module provides access to the most secure source of randomness that your operating system provides.
 
-class secrets.SystemRandom
+##### class secrets.SystemRandom
+
 A class for generating random numbers using the highest-quality sources provided by the operating system. See random.SystemRandom for additional details.
 
 secrets.choice(sequence)
@@ -58,24 +52,23 @@ secrets.randbits(k)
 Return an int with k random bits.
 
 Generating tokens
+
 The secrets module provides functions for generating secure tokens, suitable for applications such as password resets, hard-to-guess URLs, and similar.
 
 secrets.token_bytes([nbytes=None])
 Return a random byte string containing nbytes number of bytes. If nbytes is None or not supplied, a reasonable default is used.
 
->>>
+
 >>> token_bytes(16)  
 b'\xebr\x17D*t\xae\xd4\xe3S\xb6\xe2\xebP1\x8b'
 secrets.token_hex([nbytes=None])
 Return a random text string, in hexadecimal. The string has nbytes random bytes, each byte converted to two hex digits. If nbytes is None or not supplied, a reasonable default is used.
 
->>>
 >>> token_hex(16)  
 'f9bf78b9a18ce6d46a0cd2b0b86df9da'
 secrets.token_urlsafe([nbytes=None])
 Return a random URL-safe text string, containing nbytes random bytes. The text is Base64 encoded, so on average each byte results in approximately 1.3 characters. If nbytes is None or not supplied, a reasonable default is used.
 
->>>
 >>> token_urlsafe(16)  
 'Drmhze6EPcv0fN_81Bj-nA'
 How many bytes should tokens use?
@@ -86,6 +79,7 @@ For those who want to manage their own token length, you can explicitly specify 
 Otherwise, if no argument is provided, or if the argument is None, the token_* functions will use a reasonable default instead.
 
 Note That default is subject to change at any time, including during maintenance releases.
+
 Other functions
 secrets.compare_digest(a, b)
 Return True if strings a and b are equal, otherwise False, in such a way as to reduce the risk of timing attacks. See hmac.compare_digest() for additional details.
@@ -133,27 +127,4 @@ Recipes and best practices
 Previous topic
 hmac — Keyed-Hashing for Message Authentication
 
-Next topic
-Generic Operating System Services
 
-This Page
-Report a Bug
-Show Source
-«
-indexmodules |next |previous |python logo Python » 
-
-English
-
-3.10.1
- 3.10.1 Documentation » The Python Standard Library » Cryptographic Services » secrets — Generate secure random numbers for managing secrets
-Quick search
-  |
-© Copyright 2001-2021, Python Software Foundation.
-This page is licensed under the Python Software Foundation License Version 2.
-Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
-See History and License for more information.
-
-The Python Software Foundation is a non-profit corporation. Please donate.
-
-Last updated on Dec 21, 2021. Found a bug?
-Created using Sphinx 3.2.1.
