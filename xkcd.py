@@ -56,6 +56,19 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100,
         else:
             return templist
 
+ljust_width = 55
+# value = decimal integer
+def print_formatted_label(inlabel, value, parameter=None):
+    ljust_width = 55
+    if parameter:
+        label  =  inlabel + " (" + str(parameter) + ")"
+        # print("65, length of label = ", len(label))
+        print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
+    else:
+        label = inlabel
+        print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
+
+
 
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
@@ -72,13 +85,17 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     with open(filename) as f:
         # if contains == None and words_start_with == None and words_end_with == None and notcontain == None:
         original_list_unfiltered = [line.split("\t") for line in f]
-        print("len unfiltered word list             = ", "{:,}".format(len(original_list_unfiltered)))
+        # print("len unfiltered word list             = ", "{:,}".format(len(original_list_unfiltered)))
 
-        print("len unfiltered word list".ljust(43)," = ", "{:,}".format(len(original_list_unfiltered)))
+        #print("len unfiltered word list".ljust(ljust_width)," = ", "{:,}".format(len(original_list_unfiltered)))
+
+        print_formatted_label("93 length of unfiltered word list", len(original_list_unfiltered))
 
         final_word_list = [pass_def for pass_def in original_list_unfiltered if
              len(pass_def[0].strip()) <= maximum_word_length]
-        print("len word list after word length filter (", maximum_word_length, ") = ", len(final_word_list))
+        #print("len word list after word length filter (", maximum_word_length, ") = ", "{:,}".format(len(final_word_list)))
+
+        print_formatted_label("97 length word list after word length filter", len(final_word_list), maximum_word_length)
 
         for pass_def in final_word_list:
             pass_def[0] = pass_def[0].strip().lower()
@@ -89,19 +106,22 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                 templist_contains.append(pass_def)
             final_word_list = templist_contains
         
-        label = "len word list after contains filter (" , contains, ") = ",
-        print("len word list after contains filter (", contains, ") = ",
-              len(final_word_list))
-
+        # label = "len word list after contains filter (" , contains, ") = ",
+        # print("len word list after contains filter (", contains, ") = ", "{:,}".format(len(final_word_list)))
+        print_formatted_label("112 length of word list after contains filter", len(final_word_list), 
+            "None" if contains == None else contains)
         if notcontain:
             for pass_def in final_word_list:
                 if not notcontain in pass_def[0]:
                     templist_notcontain.append(pass_def)
                 final_word_list = templist_notcontain
 
-            label = "len word list after noncontain filter (", notcontain, ")"
-            print("len word list after noncontain filter (", notcontain, ") = ",
-                  len(final_word_list))
+            # label = "len word list after noncontain filter (" + notcontain + ")"
+            # print("len word list after noncontain filter (", notcontain, ") = ", ("{:,}".format(len(final_word_list)).rjust(8)))
+
+            # print(label.ljust(ljust_width), " = ",  ("{:,}".format(len(final_word_list)).rjust(8)))
+
+            print_formatted_label("119 length of word list after noncontain filter", len(final_word_list), notcontain)
 
 
         # replace
@@ -123,8 +143,12 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                   len(templist_notcontain))
             final_word_list = templist_words_start_with
             
-    print("len final_word_list = ",
-            len(final_word_list))
+    # print("length of final_word_list = ".ljust(ljust_width), " = ", ("{:,}".format(len(final_word_list)).rjust(8)))
+
+
+    print_formatted_label("148 length of final_word_list", len(final_word_list))
+
+
 
             # templist_words_start_with = templist_notcontain 
             # templist = [line.split("\t") for line in f if len(
@@ -198,8 +222,8 @@ def get_xkcd_entropy(words, num_words_in_password):
     word_list_length = len(words)
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
-    print("number of words in (filtered) word list = " + "{:,}".format(word_list_length))
-    print("number of words in password = " + str(num_words_in_password))
+    # print("number of words in (filtered) word list = " + "{:,}".format(word_list_length))
+    # print("number of words in password = " + str(num_words_in_password))
     # print("maximum word length (no. of characters) = " + str(maximum_word_length))
     print("number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
 
@@ -232,7 +256,7 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
                 password = password + pwlist[i][0].strip().lower() + ' '
                 password = password.lower()
 
-            print("password = ", password)
+            print(">>> password = ", password, "<<<")
             for i in range(len(pwlist)):
                 print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
 
