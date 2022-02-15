@@ -34,6 +34,10 @@ The secrets module is used for generating cryptographically strong random number
 
 In particular, secrets should be used in preference to the default pseudo-random number generator in the random module, which is designed for modelling and simulation, not security or cryptography.
 
+
+##### A description of how passwords might be attached:
+https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
+
 See also PEP 506
 
 The secrets module provides access to the most secure source of randomness that your operating system provides.

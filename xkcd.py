@@ -204,27 +204,93 @@ def get_pw_strength(password):
     print("entropy_density = ", stats.entropy_density)
     print("26-letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
 
-
-
+# instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
+# how many binary digts are required to encode the number of combinations
 def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
-    # num_letters_in_alphabet = 26
+    # num_letters_in_alphabet = 26, no upper or lower case, no special characters, etc.
     password_len = len(password)
-    # password_len = 2
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-    print("possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    print("214 possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
     print(num2words(possible_combinations_of_letters))
-    # how many binary digts are required to encode the number of combinations
+
     return entropy_bits
+
+
+# see: https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
+def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billions=350):
+    passwords_per_second = passwords_per_sec_billions * 1000000000
+    seconds = possible_combinations / passwords_per_second
+    print(display_time(seconds, granularity=2))
+
+
+intervals = (
+    ('years', 31536000),  # 365 * 60 * 60 * 24 * 7
+    ('weeks', 604800),  # 60 * 60 * 24 * 7
+    ('days', 86400),    # 60 * 60 * 24
+    ('hours', 3600),    # 60 * 60
+    ('minutes', 60),
+    ('seconds', 1),
+)
+
+def display_time(seconds, granularity=2):
+    years_in_seconds = 31536000 
+    years_threshold = years_in_seconds * 4
+    if seconds > years_threshold:
+        print(seconds/years_in_seconds, "years" )
+
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(value, name))
+
+    # return ', '.join(result[:granularity])
+    return ', '.join(result[:granularity])
+
+
+years5_4 =   5987369392383789062
+print(display_time(49999999999444499, granularity=2))
+print(display_time(499999, granularity=2))
+print(display_time(years5_4, granularity=2))
+
+def secondsToText(unit, granularity = 2):
+
+  ratios = {
+    'decades' : 311040000, # 60 * 60 * 24 * 30 * 12 * 10
+    'years'   : 31104000,  # 60 * 60 * 24 * 30 * 12
+    'months'  : 2592000,   # 60 * 60 * 24 * 30
+    'days'    : 86400,     # 60 * 60 * 24
+    'hours'   : 3600,      # 60 * 60
+    'minutes' : 60,        # 60
+    'seconds' : 1          # 1
+  }
+
+  texts = []
+  for ratio in ratios:
+    result, unit = divmod(unit, ratios[ratio])
+    if result:
+      if result == 1:
+        ratio = ratio.rstrip('s')
+      texts.append(f'{result} {ratio}')
+  texts = texts[:granularity] 
+  if not texts:
+    return f'0 {list(ratios)[-1]}'
+  text = ', '.join(texts)
+  if len(texts) > 1:
+    index = text.rfind(',')
+    text = f'{text[:index]} and {text[index + 1:]}'
+  return text
 
 
 def get_xkcd_entropy(words, num_words_in_password):
     word_list_length = len(words)
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
-    # print("number of words in (filtered) word list = " + "{:,}".format(word_list_length))
-    # print("number of words in password = " + str(num_words_in_password))
-    # print("maximum word length (no. of characters) = " + str(maximum_word_length))
     print("number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
 
     print(num2words(possible_combinations))
@@ -276,17 +342,9 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
             print("maximum word length (no. of characters) = " + str(maximum_word_length))
             print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
             print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
-            # if numbered_list == True:
-            #     words2 = [word.split()[1] for word in words]
-            #     password = ' '.join(secrets.choice(words2) for i in range(num_words_in_password)).lower()
-            # else:
             password = ' '.join(secrets.choice(words) for i in range(num_words_in_password)).lower()
 
             return password, entropy_bits, word_list_length, possible_combinations
-
-# for n in range(0, 10):
-#     password_and_entropy_bits = create_xkcd_password( 'wordlists/eff_large_wordlist.txt', 8, True)
-#     print(n, password_and_entropy_bits[1], password_and_entropy_bits[0])
 
 numbered_list = False  # list has a number in the first column = True
     
@@ -295,10 +353,10 @@ def main(args=sys.argv[1:]):
     print("\n######################## MAKER OF PASSWORDS #########################\n")
 
     print("Not implemented: --contains parameter")
-    print("Passwords composed of multiple dictionary words are assumed to have no delimiters between the words.")
+    print("Passwords composed of multiple dictionary words are assumed to have no delimiters between the words for entropy calculations.")
 
-    wordlists = ["wordlists/Collins_Scrabble_Words_2019.txt",
-                 "wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
+    # you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
+    wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
     parser = argparse.ArgumentParser()
 
@@ -316,13 +374,13 @@ def main(args=sys.argv[1:]):
 
     parser.add_argument("--wordlist",
                         help="path to list of words from which to select",
-                        type=str, default=wordlists[1])
+                        type=str, default=wordlists[0])
 
     parser.add_argument("-n", "--notcontain",
                         help="words should not contain this single letter",
                         type=str, default="u")
 
-    # Allow --day and --night options, but not together.
+    # Allow --day and --night options, but not together.  This exclusivity is not exactly necessary and subject to refactoring when the code is improved enough to handle independent parameters.
     group = parser.add_mutually_exclusive_group()
 
     group.add_argument("-s", "--startswith",
