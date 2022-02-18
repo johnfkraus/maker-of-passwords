@@ -28,6 +28,7 @@ git clone https://github.com/johnfkraus/maker-of-passwords.git
 cd maker-of-passwords
 source venv/bin/activate
 pip install -r requirements.txt
+python xkdc.py -h
 python xkdc.py
 ```
 For best results, run this program on an air-gapped system inside a poorly-lit Faraday cage.
