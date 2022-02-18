@@ -176,7 +176,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     # [words.append(x) for x in templist if x not in words]
     # return words   
 
-def Sorting(lst):
+def sorting(lst):
     lst2 = sorted(lst, key=len)
     return lst2
 

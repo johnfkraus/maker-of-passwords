@@ -50,11 +50,13 @@ https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
 ##### A description of how passwords might be attacked:
 https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
 
+## Disorganized notes and copy-pasted stuff follows.
+
 See also PEP 506
 
 The secrets module provides access to the most secure source of randomness that your operating system provides.
 
-##### class secrets.SystemRandom
+### class secrets.SystemRandom
 
 A class for generating random numbers using the highest-quality sources provided by the operating system. See random.SystemRandom for additional details.
 
@@ -74,7 +76,7 @@ The secrets module provides functions for generating secure tokens, suitable for
 secrets.token_bytes([nbytes=None])
 Return a random byte string containing nbytes number of bytes. If nbytes is None or not supplied, a reasonable default is used.
 
-
+\>>>
 >>> token_bytes(16)  
 b'\xebr\x17D*t\xae\xd4\xe3S\xb6\xe2\xebP1\x8b'
 secrets.token_hex([nbytes=None])
@@ -124,8 +126,8 @@ while True:
 Generate an XKCD-style passphrase:
 
 import secrets
-# On standard Linux systems, use a convenient dictionary file.
-# Other platforms may need to provide their own word-list.
+##### On standard Linux systems, use a convenient dictionary file.
+##### Other platforms may need to provide their own word-list.
 with open('/usr/share/dict/words') as f:
     words = [word.strip() for word in f]
     password = ' '.join(secrets.choice(words) for i in range(4))
