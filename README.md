@@ -1,8 +1,8 @@
 # maker-of-passwords [work in process]
 
 A password generator inspired by [xkcd.](http://xkcd.com/936/)
-Provides word definitions as an aid to memory.
-Provides password entropy metrics.
+Supplies word definitions as an aid to memory.
+Calculates password entropy metrics.
 Helps you win at Scrabble.
 
 ![image info](password_strength.png)
