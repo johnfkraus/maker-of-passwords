@@ -47,7 +47,6 @@ In particular, secrets should be used in preference to the default pseudo-random
 ##### Another xkcd password generator.
 https://github.com/redacted/XKCD-password-generator
 
-
 ##### Interesting-looking research on passwords that I haven't read yet:
 
 https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
