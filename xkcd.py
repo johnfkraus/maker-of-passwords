@@ -278,13 +278,17 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
     
 def main(args=sys.argv[1:]):
     # TODO: add parameter validation.  I.e., no numbers where letters are expected.
+    # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
     # TODO: add -v parameter for verbose terminal output; then trim down the default terminal output
 
     # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
-    parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http: // xkcd.com/936 /). Generates passwords by drawing English words randomly from a Scrabble word list subject to your optional custom parameters.  Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.\n
-Warning: this program has not been completed. Not all functionality is enabled. Little testing has been done. Passwords composed of multiple lower-case dictionary words are displayed with space delimiters for legibility but are assumed to be concatenated with no delimiters between the words for entropy calculations.""")
+
+    # https: // docs.python.org/3/library/argparse.html
+    parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http://xkcd.com/936/). 
+    Generates passwords by drawing English words randomly from a Scrabble word list, subject to your optional custom parameters.  Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.\n
+Warning: this program is incomplete. Not all functionality is enabled. Little testing has been done. Passwords composed of multiple lower-case dictionary words are displayed with space delimiters for legibility but are assumed to be concatenated with no delimiters between the words for entropy calculations.""")
 
     parser.add_argument("-t", "--ctpw",
                         help="number of passwords to generate, default=1",
