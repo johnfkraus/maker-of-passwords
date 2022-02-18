@@ -40,10 +40,10 @@ The secrets module is used for generating cryptographically strong random number
 
 In particular, secrets should be used in preference to the default pseudo-random number generator in the random module, which is designed for modelling and simulation, not security or cryptography.
 
-##### Another xkcd password generator.
+#### Another xkcd password generator I haven't yet examined it closely or stolen from it yet.
 https://github.com/redacted/XKCD-password-generator
 
-##### Interesting-looking research on passwords that I haven't read yet:
+#### Interesting-looking research on passwords that I haven't read yet:
 
 https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
 
