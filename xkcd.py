@@ -9,10 +9,7 @@ from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
 
-numbered_list = False  # list has a number in the first column = True
 ljust_width = 55 # formatting param for printing strings to terminl
-
-# word_list_filename = 'wordlists/eff_large_wordlist.txt'
 
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
                     #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
@@ -26,7 +23,6 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
             else:
                 worddict[word_len] = 1
 
-
     sortedworddict = collections.OrderedDict(sorted(worddict.items()))
     total_words = 0
     cumulative_words = 0
@@ -38,28 +34,29 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
         print(key, " : ", worddict[key], " cumul: ", cumulative_words)
     print("Total words in sortedworddict: ", total_words)
 
+# old code for list of words with no definitions
+# def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
+#                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
+#     templist = None
+#     with open(filename) as f:
+#         if contains == None and words_start_with == None and words_end_with == None:
+#             templist = [word.strip().lower()
+#                     for word in f if len(word.strip().lower()) <= maximum_word_length]
+#         else: 
+#             if notcontain == None:
+#                 contains = contains.lower()
+#                 templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower()]
+#             else:
+#                 notcontain = notcontain.lower()
+#                 templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
+#         if numbered_list == True:
+#             words2 = [word.split()[1] for word in templist]
+#             return words2
+#         else:
+#             return templist
 
-def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
-                    contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
-    templist = None
-    with open(filename) as f:
-        if contains == None and words_start_with == None and words_end_with == None:
-            templist = [word.strip().lower()
-                    for word in f if len(word.strip().lower()) <= maximum_word_length]
-        else: 
-            if notcontain == None:
-                contains = contains.lower()
-                templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower()]
-            else:
-                notcontain = notcontain.lower()
-                templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
-        if numbered_list == True:
-            words2 = [word.split()[1] for word in templist]
-            return words2
-        else:
-            return templist
 
-
+# convenience method from printing formatted information
 # value = decimal integer
 def print_formatted_label(inlabel, value, parameter=None):
     ljust_width = 55
@@ -79,7 +76,6 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     templist_notcontain = []
     templist_words_start_with = []
     final_word_list = None
-    wordlist = None
     if contains:
         contains = contains.strip().lower()
     if notcontain:
@@ -103,10 +99,10 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             pass_def[0] = pass_def[0].strip().lower()
             pass_def[1] = pass_def[1].strip()
 
-        if contains:
-            if contains in pass_def[0]:
-                templist_contains.append(pass_def)
-            final_word_list = templist_contains
+            if contains:
+                if contains in pass_def[0]:
+                    templist_contains.append(pass_def)
+                final_word_list = templist_contains
         
         # label = "len word list after contains filter (" , contains, ") = ",
         # print("len word list after contains filter (", contains, ") = ", "{:,}".format(len(final_word_list)))
@@ -184,6 +180,7 @@ def Sorting(lst):
     lst2 = sorted(lst, key=len)
     return lst2
 
+# experiment with the password_strength package; work in process
 def get_pw_strength(password):
     # assume no spaces or other delimiters between words in password
     password = password.replace(" ","")
@@ -220,8 +217,11 @@ def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
 def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billions=350):
     passwords_per_second = passwords_per_sec_billions * 1000000000
     seconds_to_exhaust = possible_combinations / passwords_per_second
-    print("221 time to exhaust search space = ", display_time(
-        seconds_to_exhaust, granularity=1), " at ", passwords_per_sec_billions, "billion passwords per second.")
+    if seconds_to_exhaust < 1.0:
+        print("Less than one second required to exhaust search space at a rate of ", passwords_per_sec_billions, "billion passwords per second.")
+    else:
+        print("221 time to exhaust search space = ", display_time(
+            seconds_to_exhaust, granularity=1), " at ", passwords_per_sec_billions, "billion passwords per second.")
     return seconds_to_exhaust
 
 
@@ -316,39 +316,23 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
     # print("notcontain = ", notcontain)
     create_wordlist_profile(filename)
     with open(filename) as f:
-        if True:
-            pwlist = []
-            password = ''
-            words = create_wordlist_with_defns(filename, numbered_list,
-                                    maximum_word_length, contains, words_start_with, notcontain=notcontain)
-            for i in range(num_words_in_password):
-                pwlist.append(secrets.choice(words))
-
-            for i in range(len(pwlist)):
-                password = password + pwlist[i][0].strip().lower() + ' '
-                password = password.lower()
-
-            print(">>> password = ", password, "<<<")
-            for i in range(len(pwlist)):
-                print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
-
-            get_xkcd_entropy(words, num_words_in_password)
-            get_pw_strength(password)
-
-        else:
-            words = create_wordlist(filename, numbered_list,
+        pwlist = []
+        password = ''
+        words = create_wordlist_with_defns(filename, numbered_list,
                                 maximum_word_length, contains, words_start_with, notcontain=notcontain)
-            word_list_length = len(words)
-            possible_combinations = int(math.pow(word_list_length,num_words_in_password))
-            entropy_bits = math.ceil(math.log(possible_combinations,2))
-            print("number of words in (filtered) word list \"" + filename +
-                "\" = " + "{:,}".format(word_list_length))
-            print("number of words in password = " + str(num_words_in_password))
-            print("maximum word length (no. of characters) = " + str(maximum_word_length))
-            print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
-            print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
-            password = ' '.join(secrets.choice(words) for i in range(num_words_in_password)).lower()
-            return password, entropy_bits, word_list_length, possible_combinations
+        for i in range(num_words_in_password):
+            pwlist.append(secrets.choice(words))
+
+        for i in range(len(pwlist)):
+            password = password + pwlist[i][0].strip().lower() + ' '
+            password = password.lower()
+
+        print(">>> password = ", password, "<<<")
+        for i in range(len(pwlist)):
+            print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
+
+        get_xkcd_entropy(words, num_words_in_password)
+        get_pw_strength(password)
 
     
 def main(args=sys.argv[1:]):
@@ -396,7 +380,7 @@ def main(args=sys.argv[1:]):
     # not implemented apparently
     group.add_argument("-c", "--contains",
                         help="words in password should contain one of these letters",
-                        type=str, default = None)
+                        type=str, default = 'q')
 
     group.add_argument("-e", "--endswith",
                         help="words in password should end with one of these letters",

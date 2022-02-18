@@ -34,7 +34,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 python xkdc.py
 
-
 ### Python secrets module
 
 This program's random word selection depends on the python secrets module.  Excerpts from the documentation follow.
@@ -48,6 +47,10 @@ In particular, secrets should be used in preference to the default pseudo-random
 ##### Another xkcd password generator.
 https://github.com/redacted/XKCD-password-generator
 
+
+##### Interesting-looking research on passwords that I haven't read yet:
+
+https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
 
 ##### A description of how passwords might be attacked:
 https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
