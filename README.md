@@ -16,20 +16,20 @@ pip3 --version
 If not, use a Google search to find out how to install python3 and pip3 on your machine.
 
 If virtualenv is not already installed, install virtualenv:
-
+```
 pip3 install -U virtualenv
 in the project root directory run:
 virtualenv venv
 source venv/bin/activate
-
+```
 ### Summary of how to run:
-
+```
 git clone https://github.com/johnfkraus/maker-of-passwords.git
 cd maker-of-passwords
 source venv/bin/activate
 pip install -r requirements.txt
 python xkdc.py
-
+```
 ### Python secrets module
 
 This program's random word selection depends on the python secrets module.  Excerpts from the documentation follow.
