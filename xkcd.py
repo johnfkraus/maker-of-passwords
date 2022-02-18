@@ -9,8 +9,10 @@ from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
 
-# num_words_in_pw = 4
-word_list_filename = 'wordlists/eff_large_wordlist.txt'
+numbered_list = False  # list has a number in the first column = True
+ljust_width = 55 # formatting param for printing strings to terminl
+
+# word_list_filename = 'wordlists/eff_large_wordlist.txt'
 
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
                     #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
@@ -34,7 +36,8 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
         total_words = total_words + worddict[key]
         cumulative_words = cumulative_words + worddict[key]
         print(key, " : ", worddict[key], " cumul: ", cumulative_words)
-    print("Total : ", total_words)
+    print("Total words in sortedworddict: ", total_words)
+
 
 def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
@@ -56,7 +59,7 @@ def create_wordlist(filename, numbered_list=False, maximum_word_length=100,
         else:
             return templist
 
-ljust_width = 55
+
 # value = decimal integer
 def print_formatted_label(inlabel, value, parameter=None):
     ljust_width = 55
@@ -69,10 +72,9 @@ def print_formatted_label(inlabel, value, parameter=None):
         print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
 
 
-
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
-    templist_length = None
+    # templist_length = None
     templist_contains = []
     templist_notcontain = []
     templist_words_start_with = []
@@ -118,11 +120,9 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
 
             # label = "len word list after noncontain filter (" + notcontain + ")"
             # print("len word list after noncontain filter (", notcontain, ") = ", ("{:,}".format(len(final_word_list)).rjust(8)))
-
             # print(label.ljust(ljust_width), " = ",  ("{:,}".format(len(final_word_list)).rjust(8)))
 
             print_formatted_label("119 length of word list after noncontain filter", len(final_word_list), notcontain)
-
 
         # replace
         # for pass_def in templist_contains:
@@ -145,10 +145,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             
     # print("length of final_word_list = ".ljust(ljust_width), " = ", ("{:,}".format(len(final_word_list)).rjust(8)))
 
-
     print_formatted_label("148 length of final_word_list", len(final_word_list))
-
-
 
             # templist_words_start_with = templist_notcontain 
             # templist = [line.split("\t") for line in f if len(
@@ -178,8 +175,6 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
         # else:
         #     return templist
 
-
-
     # # using list comprehension to remove duplicated from list
     # words = []
     # [words.append(x) for x in templist if x not in words]
@@ -190,7 +185,7 @@ def Sorting(lst):
     return lst2
 
 def get_pw_strength(password):
-    # assume no space between words in password
+    # assume no spaces or other delimiters between words in password
     password = password.replace(" ","")
     stats = PasswordStats(password)
 
@@ -201,6 +196,7 @@ def get_pw_strength(password):
     print("char_categories = ", stats.char_categories)
     print("char_categories_detailed = ", stats.char_categories_detailed)
     print("combinations = ", "{:,}".format(stats.combinations))
+    print("digits = ", len(str(stats.combinations)))
     print("entropy_density = ", stats.entropy_density)
     print("26-letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
 
@@ -212,16 +208,21 @@ def get_entropy_bits_based_on_alphabet_length(password, alpha_len):
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
     print("214 possible_combinations of", password_len, "letters with", alpha_len, "-character alphabet = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    # Note: num2words US vs. UK disjunct.
+    # https://www.merriam-webster.com/dictionary/number#table
     print(num2words(possible_combinations_of_letters))
-
     return entropy_bits
 
 
 # see: https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
+# How long would it take to exhaust the search space for a given number of possible pasword
+# combinations and a given rate of password hashing.
 def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billions=350):
     passwords_per_second = passwords_per_sec_billions * 1000000000
-    seconds = possible_combinations / passwords_per_second
-    print(display_time(seconds, granularity=2))
+    seconds_to_exhaust = possible_combinations / passwords_per_second
+    print("221 time to exhaust search space = ", display_time(
+        seconds_to_exhaust, granularity=1), " at ", passwords_per_sec_billions, "billion passwords per second.")
+    return seconds_to_exhaust
 
 
 intervals = (
@@ -236,8 +237,10 @@ intervals = (
 def display_time(seconds, granularity=2):
     years_in_seconds = 31536000 
     years_threshold = years_in_seconds * 4
-    if seconds > years_threshold:
-        print(seconds/years_in_seconds, "years" )
+    # if seconds > years_threshold:
+    #     years = "{:,}".format(seconds/years_in_seconds)
+        # print(seconds/years_in_seconds, "years" )
+        # print(years, "years" )
 
     result = []
 
@@ -247,18 +250,20 @@ def display_time(seconds, granularity=2):
             seconds -= value * count
             if value == 1:
                 name = name.rstrip('s')
+            value =  "{:,}".format(value)
             result.append("{} {}".format(value, name))
 
     # return ', '.join(result[:granularity])
     return ', '.join(result[:granularity])
 
 
-years5_4 =   5987369392383789062
-print(display_time(49999999999444499, granularity=2))
-print(display_time(499999, granularity=2))
-print(display_time(years5_4, granularity=2))
+# years5_4 =   5987369392383789062
+# print(display_time(49999999999444499, granularity=2))
+# print(display_time(499999, granularity=2))
+# print(display_time(years5_4, granularity=2))
 
-def secondsToText(unit, granularity = 2):
+# the following method might be better than display_time(), above.
+def seconds_to_text(unit, granularity = 1):
 
   ratios = {
     'decades' : 311040000, # 60 * 60 * 24 * 30 * 12 * 10
@@ -292,13 +297,14 @@ def get_xkcd_entropy(words, num_words_in_password):
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
     print("number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
+    print("# of decimal digits = ", len(str(possible_combinations)))
+    time_to_exhaust_search_space(possible_combinations)
 
     print(num2words(possible_combinations))
-
     print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
 
 
-def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt", 
+def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_definitions.txt",
         num_words_in_password=7, 
         numbered_list=False, 
         contains=None,
@@ -329,7 +335,6 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
             get_xkcd_entropy(words, num_words_in_password)
             get_pw_strength(password)
 
-
         else:
             words = create_wordlist(filename, numbered_list,
                                 maximum_word_length, contains, words_start_with, notcontain=notcontain)
@@ -343,15 +348,16 @@ def create_xkcd_password(filename="xxwordlists/Collins_Scrabble_Words_2019.txt",
             print("number of possible combinations of words = ", "{:,}".format(possible_combinations),  bin(possible_combinations))
             print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
             password = ' '.join(secrets.choice(words) for i in range(num_words_in_password)).lower()
-
             return password, entropy_bits, word_list_length, possible_combinations
 
-numbered_list = False  # list has a number in the first column = True
     
 def main(args=sys.argv[1:]):
-
-    print("\n######################## MAKER OF PASSWORDS #########################\n")
-
+    print("\n######################## MAKER OF PASSWORDS #########################")
+    print("""* Generate xkcd-type passwords by drawing from a list of words useful in a game of Scrabble.
+* Provide word definitions as an aid to memory.
+* Provide password entropy metrics.
+* Win at Scrabble.
+""")
     print("Not implemented: --contains parameter")
     print("Passwords composed of multiple dictionary words are assumed to have no delimiters between the words for entropy calculations.")
 
@@ -407,41 +413,3 @@ def main(args=sys.argv[1:]):
 
 if __name__ == '__main__':
     main()
-
-
-# if __name__ == "__main__":
-#     print("main", sys.argv)
-#     main(sys.argv[1:])
-
-# def main(argv):
-#     parser = argparse.ArgumentParser(description='Process some integers.')
-#     parser.add_argument("-n")
-#     try:
-#         opts, args = getopt.getopt(argv,"nhi:o:",["n=","l=", "s=", "e="])
-#         print(opts, args)
-#     except getopt.GetoptError:
-#         print('xkcd.py -i <inputfile> -o <outputfile>')
-#         sys.exit(2)
-#     startswith = []
-#     endswith = []
-#     contains = []
-#     num = 0
-#     for opt, arg in opts:
-#         if opt == '-h':
-#             print('xkcd.py -n <number of passwords to generate> -s <words start with> -e <words end with letter> -c <words contain letters>')
-#             sys.exit()
-#         elif opt in ("n", "--num"):
-#             num = arg
-#             print("num = ", num)
-#         elif opt in ("-s", "--startswith"):
-#             startswitharg = arg
-#             if startswitharg.contains(","):
-#                 startswith.append(startswitharg.split(","))
-#             print(startswith)
-#         elif opt in ("-e", "--endswith"):
-#             endswitharg = arg
-#             if endswitharg.contains(","):
-#                 endswith.append(endswitharg.split(","))
-#             print(endswith)
-
-#     #print( 'Input file is "', inputfile)

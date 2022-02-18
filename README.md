@@ -1,5 +1,9 @@
 # maker-of-passwords
 
+Generate xkcd-type passwords by drawing from a list of words useful in a game of Scrabble.
+Provide word definitions as an aid to memory.
+Provide password entropy metrics.
+Win at Scrabble.
 ## To run this project
 You must have python3 and pip3 installed.  How to tell?
 ``` 
@@ -34,8 +38,11 @@ The secrets module is used for generating cryptographically strong random number
 
 In particular, secrets should be used in preference to the default pseudo-random number generator in the random module, which is designed for modelling and simulation, not security or cryptography.
 
+##### Another xkcd password generator.
+https://github.com/redacted/XKCD-password-generator
 
-##### A description of how passwords might be attached:
+
+##### A description of how passwords might be attacked:
 https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
 
 See also PEP 506
