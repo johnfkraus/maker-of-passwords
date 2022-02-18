@@ -30,7 +30,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 python xkdc.py
 ```
-For best results, run this program on an air-gapped system inside a Faraday cage.
+For best results, run this program on an air-gapped system inside a poorly-lit Faraday cage.
 
 ### Python secrets module
 
