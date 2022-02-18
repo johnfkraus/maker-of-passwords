@@ -87,13 +87,13 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
 
         #print("len unfiltered word list".ljust(ljust_width)," = ", "{:,}".format(len(original_list_unfiltered)))
 
-        print_formatted_label("93 length of unfiltered word list", len(original_list_unfiltered))
+        print_formatted_label("Length of unfiltered word list", len(original_list_unfiltered))
 
         final_word_list = [pass_def for pass_def in original_list_unfiltered if
              len(pass_def[0].strip()) <= maximum_word_length]
         #print("len word list after word length filter (", maximum_word_length, ") = ", "{:,}".format(len(final_word_list)))
 
-        print_formatted_label("97 length word list after word length filter", len(final_word_list), maximum_word_length)
+        print_formatted_label("Length word list after word length filter", len(final_word_list), maximum_word_length)
 
         for pass_def in final_word_list:
             pass_def[0] = pass_def[0].strip().lower()
@@ -118,7 +118,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             # print("len word list after noncontain filter (", notcontain, ") = ", ("{:,}".format(len(final_word_list)).rjust(8)))
             # print(label.ljust(ljust_width), " = ",  ("{:,}".format(len(final_word_list)).rjust(8)))
 
-            print_formatted_label("119 length of word list after noncontain filter", len(final_word_list), notcontain)
+            print_formatted_label("Length of word list after noncontain filter", len(final_word_list), notcontain)
 
         # replace
         # for pass_def in templist_contains:
@@ -141,7 +141,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             
     # print("length of final_word_list = ".ljust(ljust_width), " = ", ("{:,}".format(len(final_word_list)).rjust(8)))
 
-    print_formatted_label("148 length of final_word_list", len(final_word_list))
+    print_formatted_label("Length of final_word_list", len(final_word_list))
 
             # templist_words_start_with = templist_notcontain 
             # templist = [line.split("\t") for line in f if len(
@@ -220,7 +220,7 @@ def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billio
     if seconds_to_exhaust < 1.0:
         print("Less than one second required to exhaust search space at a rate of ", passwords_per_sec_billions, "billion passwords per second.")
     else:
-        print("221 time to exhaust search space = ", display_time(
+        print("Time to exhaust search space = ", display_time(
             seconds_to_exhaust, granularity=1), " at ", passwords_per_sec_billions, "billion passwords per second.")
     return seconds_to_exhaust
 
