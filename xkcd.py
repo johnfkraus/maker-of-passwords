@@ -142,8 +142,7 @@ def get_pw_strength(password):
     print("alphabet_cardinality = ", stats.alphabet_cardinality)
     print("char_categories = ", stats.char_categories)
     print("char_categories_detailed = ", stats.char_categories_detailed)
-    print("combinations = ", "{:,}".format(stats.combinations))
-    print("digits = ", len(str(stats.combinations)))
+    print("combinations = ", "{:,}".format(stats.combinations), ", digits = ", len(str(stats.combinations)))
     print("entropy_density = ", stats.entropy_density)
     print("26 lower-case letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
 
@@ -240,10 +239,10 @@ def get_xkcd_entropy(words, num_words_in_password):
     word_list_length = len(words)
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
-    print("number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
+    print("Number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
     print("# of decimal digits = ", len(str(possible_combinations)))
-    time_to_exhaust_search_space(possible_combinations)
     print(num2words(possible_combinations).capitalize())
+    time_to_exhaust_search_space(possible_combinations)
     print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
 
 
@@ -256,7 +255,6 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         words_end_with=None,
         notcontain=None):
 
-    # print("notcontain = ", notcontain)
     create_wordlist_profile(filename)
     with open(filename) as f:
         pwlist = []
@@ -279,40 +277,32 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
 
     
 def main(args=sys.argv[1:]):
-    print("\n######################## MAKER OF PASSWORDS #########################")
-    print("""A password generator inspired by [xkcd](http://xkcd.com/936/). Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.""")
-    print("Warning: this program has not been completed. Not all functionality is enabled. Little testing has been done.")
-    
-    
-#     * Generate xkcd-type passwords by drawing from a list of words useful in a game of Scrabble.
-# * Provide word definitions as an aid to memory.
-# * Provide password entropy metrics.
-# * Win at Scrabble.
-# """)
-    print("Passwords composed of multiple dictionary words are displayed with space delimiters but are assumed to be concatenated with no delimiters between the words for entropy calculations.")
+    # TODO: add parameter validation.  I.e., no numbers where letters are expected.
+    # TODO: add -v parameter for verbose terminal output; then trim down the default terminal output
 
-    # you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
+    # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http: // xkcd.com/936 /). Generates passwords by drawing English words randomly from a Scrabble word list subject to your optional custom parameters.  Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.\n
+Warning: this program has not been completed. Not all functionality is enabled. Little testing has been done. Passwords composed of multiple lower-case dictionary words are displayed with space delimiters for legibility but are assumed to be concatenated with no delimiters between the words for entropy calculations.""")
 
-    parser.add_argument("--num",
+    parser.add_argument("-t", "--ctpw",
                         help="number of passwords to generate, default=1",
                         type=int, default=1)
 
-    parser.add_argument("--numwords",
+    parser.add_argument("-w","--numwords" ,
                         help="number of words in each password, default=6",
                         type=int, default = 6)
 
-    parser.add_argument("--maxwordlen",
+    parser.add_argument("-m", "--maxwordlen",
                         help="max number of characters per word, default=8",
                         type=int, default=8)
 
-    parser.add_argument("--wordlist",
+    parser.add_argument("-l", "--wordlist",
                         help="path to list of words from which to select",
                         type=str, default=wordlists[0])
 
-    parser.add_argument("-n", "--notcontain",
+    parser.add_argument("-x", "--notcontain",
                         help="words should not contain this single letter",
                         type=str, default=None)
 
@@ -335,7 +325,9 @@ def main(args=sys.argv[1:]):
 
     print("args = ", args)
 
-    for n in range(0, args.num):
+    for n in range(0, args.ctpw):
+        if (args.ctpw > 1):
+            print("========Generated password #", n + 1, "=======")
         create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
 
