@@ -1,9 +1,16 @@
 # maker-of-passwords
 
-Generate xkcd-type passwords by drawing from a list of words useful in a game of Scrabble.
+A password generator inspired by `XKCD 936 <http://xkcd.com/936/>`_::
 Provide word definitions as an aid to memory.
 Provide password entropy metrics.
 Win at Scrabble.
+
+![image info](password_strength.png)
+
+-----
+
+.. image:: http://imgs.xkcd.com/comics/password_strength.png
+
 ## To run this project
 You must have python3 and pip3 installed.  How to tell?
 ``` 
