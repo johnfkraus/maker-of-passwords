@@ -2,6 +2,7 @@ import collections
 import secrets
 import sys, getopt
 import math
+import re
 import argparse
 from num2words import num2words
 from typing_extensions import final
@@ -34,30 +35,28 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
         print(key, " : ", worddict[key], " cumul: ", cumulative_words)
     print("Total words in sortedworddict: ", total_words)
 
-# old code for list of words with no definitions
-# def create_wordlist(filename, numbered_list=False, maximum_word_length=100, 
-#                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
-#     templist = None
-#     with open(filename) as f:
-#         if contains == None and words_start_with == None and words_end_with == None:
-#             templist = [word.strip().lower()
-#                     for word in f if len(word.strip().lower()) <= maximum_word_length]
-#         else: 
-#             if notcontain == None:
-#                 contains = contains.lower()
-#                 templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower()]
-#             else:
-#                 notcontain = notcontain.lower()
-#                 templist = [word.strip().lower() for word in f if len(word) <= maximum_word_length and contains in word.lower() and not notcontain in word.lower()]
-#         if numbered_list == True:
-#             words2 = [word.split()[1] for word in templist]
-#             return words2
-#         else:
-#             return templist
+
+def get_no_vowel_words():
+    novowelwords = []
+    words = ['who', 'what', 'when', 'where', 'why', 'sly', 'shy', 'bashful', 'coy', 'myth', 'hymn']
+    vowel = ['a', 'e', 'i', 'o', 'u']
+
+    for word in words:
+        novowel = True    
+
+        for letter in word:
+            if letter in vowel:
+                novowel=False
+
+        if novowel == True:
+            novowelwords.append(word)
 
 
-# convenience method from printing formatted information
-# value = decimal integer
+    print(novowelwords)
+
+
+# convenience method for neater looking printing of a label followed by a number
+# "value" parameter is expected to be a decimal integer
 def print_formatted_label(inlabel, value, parameter=None):
     ljust_width = 55
     if parameter:
@@ -67,6 +66,7 @@ def print_formatted_label(inlabel, value, parameter=None):
     else:
         label = inlabel
         print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
+
 
 
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
@@ -82,21 +82,29 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     with open(filename) as f:
         # if contains == None and words_start_with == None and words_end_with == None and notcontain == None:
         original_list_unfiltered = [line.split("\t") for line in f]
-        # print("len unfiltered word list             = ", "{:,}".format(len(original_list_unfiltered)))
-
-        #print("len unfiltered word list".ljust(ljust_width)," = ", "{:,}".format(len(original_list_unfiltered)))
 
         print_formatted_label("Length of unfiltered word list", len(original_list_unfiltered))
 
         final_word_list = [pass_def for pass_def in original_list_unfiltered if
              len(pass_def[0].strip()) <= maximum_word_length]
-        #print("len word list after word length filter (", maximum_word_length, ") = ", "{:,}".format(len(final_word_list)))
 
         print_formatted_label("Length word list after word length filter", len(final_word_list), maximum_word_length)
 
+
+
+        
         for pass_def in final_word_list:
             pass_def[0] = pass_def[0].strip().lower()
             pass_def[1] = pass_def[1].strip()
+
+
+        # no vowels
+            if True: # no vowels param specified
+                x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", pass_def[0])
+                if x:
+                    print(pass_def[0])
+
+
 
             if contains:
                 if contains in pass_def[0]:
@@ -126,10 +134,6 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
     print_formatted_label("Length of final_word_list", len(final_word_list))
     return final_word_list
 
-
-# def sorting(lst):
-#     lst2 = sorted(lst, key=len)
-#     return lst2
 
 # experiment with the password_strength package; work in process
 def get_pw_strength(password):
@@ -302,6 +306,9 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
     parser.add_argument("-m", "--maxwordlen",
                         help="max number of characters per word, default=8",
                         type=int, default=8)
+
+    parser.add_argument('--novowels', action='store_false')
+
 
     parser.add_argument("-l", "--wordlist",
                         help="path to list of words from which to select",
