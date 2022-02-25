@@ -10,6 +10,9 @@ from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
 
+# todo: add no-vowels functionality
+# todo: add no-consonants functionality
+
 ljust_width = 55 # formatting param for printing strings to terminl
 
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
