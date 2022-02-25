@@ -53,6 +53,30 @@ https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
 #### A description of how passwords might be attacked:
 https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
 
+#### Words with no vowels
+
+https://regex101.com/r/IWvdVF/1/
+
+import re
+
+#Check if the string starts with "The" and ends with "Spain":
+
+txt = "The rain in Spain"
+x = re.search("^The.*Spain$", txt)
+
+# \b[bcdfghjklmnpqrstvwxyz]+\b
+
+if x:
+  print("YES! We have a match!")
+else:
+  print("No match")
+
+
+
+
+
+
+
 ## Disorganized notes and copy-pasted stuff follows.
 
 See also PEP 506
