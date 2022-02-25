@@ -15,6 +15,7 @@ from password_strength import PasswordPolicy
 
 ljust_width = 55 # formatting param for printing strings to terminl
 
+# method to explore characteristics of the word list; has no effect on password selection
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
                     #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
     worddict = {}
@@ -39,6 +40,7 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
     print("Total words in sortedworddict: ", total_words)
 
 
+# rename to specify what we mean by "vowels?"; get_no_aeiou()?
 def get_no_vowel_words():
     novowelwords = []
     words = ['who', 'what', 'when', 'where', 'why', 'sly', 'shy', 'bashful', 'coy', 'myth', 'hymn']
@@ -74,6 +76,8 @@ def print_formatted_label(inlabel, value, parameter=None):
 
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
+
+    no_vowel_list = []
     templist_contains = []
     templist_notcontain = []
     templist_words_start_with = []
@@ -84,10 +88,11 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
         notcontain = notcontain.strip().lower()
     with open(filename) as f:
         # if contains == None and words_start_with == None and words_end_with == None and notcontain == None:
+        # make list of lists where inner lists are [word, definition]
         original_list_unfiltered = [line.split("\t") for line in f]
 
         print_formatted_label("Length of unfiltered word list", len(original_list_unfiltered))
-
+        # remove leading/trailing spaces from strings
         final_word_list = [pass_def for pass_def in original_list_unfiltered if
              len(pass_def[0].strip()) <= maximum_word_length]
 
@@ -103,9 +108,17 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
 
         # no vowels
             if True: # no vowels param specified
-                x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", pass_def[0])
+                # word = "xxxxxxx"
+
+                word = pass_def[0]
+                regex = r'\b[bcdfghjklmnpqrstvwxyz]+\b'
+                # x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", pass_def[0])
+                # x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", word)
+                x = re.search(regex, word)
                 if x:
-                    print(pass_def[0])
+                    no_vowel_list.append(pass_def)
+                    # print(">>>>no vowel word", pass_def[0])
+                    print(">>>>no vowel word", word)
 
 
 
@@ -114,6 +127,10 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                     templist_contains.append(pass_def)
                 final_word_list = templist_contains
         
+
+        print("len no_vowel list ", len(no_vowel_list))
+
+
 
         print_formatted_label("Length of word list after contains filter", len(final_word_list), 
             "None" if contains == None else contains)
