@@ -15,7 +15,7 @@ from password_strength import PasswordPolicy
 
 ljust_width = 55 # formatting param for printing strings to terminl
 
-# method to explore characteristics of the word list; has no effect on password selection
+# method to explore word list; for info only; has no effect on password selection
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
                     #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
     worddict = {}
@@ -41,23 +41,19 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
 
 
 # rename to specify what we mean by "vowels?"; get_no_aeiou()?
-def get_no_vowel_words():
-    novowelwords = []
-    words = ['who', 'what', 'when', 'where', 'why', 'sly', 'shy', 'bashful', 'coy', 'myth', 'hymn']
-    vowel = ['a', 'e', 'i', 'o', 'u']
+# def get_no_vowel_words():
+#     novowelwords = []
+#     words = ['who', 'what', 'when', 'where', 'why', 'sly', 'shy', 'bashful', 'coy', 'myth', 'hymn']
+#     vowel = ['a', 'e', 'i', 'o', 'u']
+#     for word in words:
+#         novowel = True    
+#         for letter in word:
+#             if letter in vowel:
+#                 novowel=False
+#         if novowel == True:
+#             novowelwords.append(word)
 
-    for word in words:
-        novowel = True    
-
-        for letter in word:
-            if letter in vowel:
-                novowel=False
-
-        if novowel == True:
-            novowelwords.append(word)
-
-
-    print(novowelwords)
+#     print(novowelwords)
 
 
 # convenience method for neater looking printing of a label followed by a number
@@ -73,9 +69,8 @@ def print_formatted_label(inlabel, value, parameter=None):
         print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
 
 
-
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
-                    contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
+                    contains=None, words_start_with=None,  words_end_with=None, notcontain=None, args=None):
 
     no_aeiou_list = []
     templist_contains = []
@@ -103,14 +98,16 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             pass_def[1] = pass_def[1].strip()
 
 
-        # no vowels
-            if True: # no vowels param specified
+        # no vowels; words not containing aeiou
+            #print(args.verbose)
+            if args.noaeiou: # no vowels param specified
                 word = pass_def[0]
                 regex = r'\b[bcdfghjklmnpqrstvwxyz]+\b'
                 haz_no_aeiou = re.search(regex, word)
                 if haz_no_aeiou:
                     no_aeiou_list.append(pass_def)
-                    print(">>>> no vowel: ", pass_def[0], pass_def[1])
+                    if args.verbose:
+                        print(">>>> no vowel: ", pass_def[0], pass_def[1])
                 final_word_list = no_aeiou_list
 
 
@@ -120,20 +117,22 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                 final_word_list = templist_contains
         
 
-        print("len no aeiou list ", len(no_aeiou_list))
+        # print("len no aeiou list ", len(no_aeiou_list))
 
+        if args.noaeiou:
+            print_formatted_label("Length of word list after no aeiou filter", len(final_word_list))
+            # print("len no aeiou list ", len(no_aeiou_list))
 
-
-        print_formatted_label("Length of word list after contains filter", len(final_word_list), 
+        if args.contains:
+            print_formatted_label("Length of word list after contains filter", len(final_word_list), 
             "None" if contains == None else contains)
-        if notcontain:
+        if args.notcontain:
             for pass_def in final_word_list:
                 if not notcontain in pass_def[0]:
                     templist_notcontain.append(pass_def)
                 final_word_list = templist_notcontain
 
             print_formatted_label("Length of word list after noncontain filter", len(final_word_list), notcontain)
-
 
         if words_start_with:
             for pass_def in templist_notcontain:
@@ -269,14 +268,14 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         maximum_word_length=8,
         words_start_with=None, 
         words_end_with=None,
-        notcontain=None):
+        notcontain=None, args=None):
 
     create_wordlist_profile(filename)
     with open(filename) as f:
         pwlist = []
         password = ''
         words = create_wordlist_with_defns(filename, numbered_list,
-                                maximum_word_length, contains, words_start_with, notcontain=notcontain)
+                                maximum_word_length, contains, words_start_with, notcontain=notcontain, args=args)
         for i in range(num_words_in_password):
             pwlist.append(secrets.choice(words))
 
@@ -319,10 +318,10 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
                         help="max number of characters per word, default=8",
                         type=int, default=8)
 
-    parser.add_argument('--noaeiou', action='store_false')
+    parser.add_argument('--noaeiou', action='store_true')
 
-
-    parser.add_argument("-v", "--verbose", action='store_false')
+    # to be implemented
+    parser.add_argument("-v", "--verbose", action='store_true')
 
     parser.add_argument("-l", "--wordlist",
                         help="path to list of words from which to select",
@@ -351,12 +350,18 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     print("args = ", args)
 
+    maximum_word_length = args.maxwordlen
+    if int(maximum_word_length) < 2:
+        print("maximum_word_length = ", maximum_word_length)
+        raise argparse.ArgumentError(maximum_word_length,"maxwordlen can't be less than 2")
+
+
     for n in range(0, args.ctpw):
         if (args.ctpw > 1):
             print("========Generated password #", n + 1, "========")
 
         create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
-                                         maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain)
+                                         maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain, args=args)
 
 
 if __name__ == '__main__':
