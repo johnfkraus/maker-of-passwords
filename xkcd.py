@@ -77,7 +77,7 @@ def print_formatted_label(inlabel, value, parameter=None):
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
                     contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
 
-    no_vowel_list = []
+    no_aeiou_list = []
     templist_contains = []
     templist_notcontain = []
     templist_words_start_with = []
@@ -97,9 +97,6 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
              len(pass_def[0].strip()) <= maximum_word_length]
 
         print_formatted_label("Length word list after word length filter", len(final_word_list), maximum_word_length)
-
-
-
         
         for pass_def in final_word_list:
             pass_def[0] = pass_def[0].strip().lower()
@@ -108,18 +105,13 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
 
         # no vowels
             if True: # no vowels param specified
-                # word = "xxxxxxx"
-
                 word = pass_def[0]
                 regex = r'\b[bcdfghjklmnpqrstvwxyz]+\b'
-                # x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", pass_def[0])
-                # x = re.search("\b[bcdfghjklmnpqrstvwxyz]+\b", word)
-                x = re.search(regex, word)
-                if x:
-                    no_vowel_list.append(pass_def)
-                    # print(">>>>no vowel word", pass_def[0])
-                    print(">>>>no vowel word", word)
-
+                haz_no_aeiou = re.search(regex, word)
+                if haz_no_aeiou:
+                    no_aeiou_list.append(pass_def)
+                    print(">>>> no vowel: ", pass_def[0], pass_def[1])
+                final_word_list = no_aeiou_list
 
 
             if contains:
@@ -128,7 +120,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                 final_word_list = templist_contains
         
 
-        print("len no_vowel list ", len(no_vowel_list))
+        print("len no aeiou list ", len(no_aeiou_list))
 
 
 
@@ -327,8 +319,10 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
                         help="max number of characters per word, default=8",
                         type=int, default=8)
 
-    parser.add_argument('--novowels', action='store_false')
+    parser.add_argument('--noaeiou', action='store_false')
 
+
+    parser.add_argument("-v", "--verbose", action='store_false')
 
     parser.add_argument("-l", "--wordlist",
                         help="path to list of words from which to select",
