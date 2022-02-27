@@ -290,7 +290,19 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         get_xkcd_entropy(words, num_words_in_password)
         get_pw_strength(password)
 
-    
+
+
+# https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
+# validate user-supplied arguments
+# validate maxwordlen, the maximum number of characters in words for the word list
+def check_maxwordlen(in_maxwordlen):
+    num = int(in_maxwordlen)
+    if num < 2:  # or num > 15:
+        raise argparse.ArgumentTypeError('maximum word length must be greater than one')
+    return num
+
+
+
 def main(args=sys.argv[1:]):
     # TODO: add parameter validation.  I.e., no numbers where letters are expected.
     # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
@@ -314,9 +326,16 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
                         help="number of words in each password, default=6",
                         type=int, default = 6)
 
+
+    """
+    The argparse module has a function called add_arguments() where the type to which the argument 
+    should be converted is given. Instead of using the available values, pass a user-defined function 
+    to the add_arguments() function. 
+    """
+
     parser.add_argument("-m", "--maxwordlen",
                         help="max number of characters per word, default=8",
-                        type=int, default=8)
+                        type=check_maxwordlen, default=8)
 
     parser.add_argument('--noaeiou', action='store_true')
 
