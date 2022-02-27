@@ -10,12 +10,12 @@ from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
 
-# todo: add no-vowels functionality
+# todo: add no-vowels functionality (in progress)
 # todo: add no-consonants functionality
 
-ljust_width = 55 # formatting param for printing strings to terminl
+ljust_width = 55 # formatting param for printing strings to terminal
 
-# method to explore word list; for info only; has no effect on password selection
+# method to explore word list; informational only; has no effect on password selection; work in process
 def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_length=100, 
                     #contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
     worddict = {}
@@ -37,23 +37,8 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
         total_words = total_words + worddict[key]
         cumulative_words = cumulative_words + worddict[key]
         print(key, " : ", worddict[key], " cumul: ", cumulative_words)
-    print("Total words in sortedworddict: ", total_words)
-
-
-# rename to specify what we mean by "vowels?"; get_no_aeiou()?
-# def get_no_vowel_words():
-#     novowelwords = []
-#     words = ['who', 'what', 'when', 'where', 'why', 'sly', 'shy', 'bashful', 'coy', 'myth', 'hymn']
-#     vowel = ['a', 'e', 'i', 'o', 'u']
-#     for word in words:
-#         novowel = True    
-#         for letter in word:
-#             if letter in vowel:
-#                 novowel=False
-#         if novowel == True:
-#             novowelwords.append(word)
-
-#     print(novowelwords)
+    #print("Total words in sortedworddict: ", total_words)
+    print_formatted_label("Total words in sortedworddict: ", total_words)
 
 
 # convenience method for neater looking printing of a label followed by a number
@@ -98,8 +83,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             pass_def[1] = pass_def[1].strip()
 
 
-        # no vowels; words not containing aeiou
-            #print(args.verbose)
+        # limit word list to words containing no vowels (aeiou)
             if args.noaeiou: # no vowels param specified
                 word = pass_def[0]
                 regex = r'\b[bcdfghjklmnpqrstvwxyz]+\b'
@@ -110,14 +94,11 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
                         print(">>>> no vowel: ", pass_def[0], pass_def[1])
                 final_word_list = no_aeiou_list
 
-
             if contains:
                 if contains in pass_def[0]:
                     templist_contains.append(pass_def)
                 final_word_list = templist_contains
         
-
-        # print("len no aeiou list ", len(no_aeiou_list))
 
         if args.noaeiou:
             print_formatted_label("Length of word list after no aeiou filter", len(final_word_list))
@@ -151,7 +132,7 @@ def get_pw_strength(password):
     # assume no spaces or other delimiters between words in password
     password = password.replace(" ","")
     stats = PasswordStats(password)
-
+    print("==== Metrics from the external password_strength library====")
     print(password, "entropy bits = ", round(stats.entropy_bits),"entropy density = ", stats.entropy_density,"strength = ", stats.strength())
     print("alphabet = ", stats.alphabet)
     print("alphabet_cardinality = ", stats.alphabet_cardinality)
@@ -167,17 +148,19 @@ def get_entropy_bits_based_on_alphabet_length(generated_password, alpha_len):
     password_len = len(generated_password)
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-    print("Possible_combinations of letters using a", alpha_len, "-character set and a password of", password_len, "letters = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    print("Possible_combinations of letters using a", alpha_len, "-character set and a password of", password_len, "letters (ignoring xkcd process) = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
     # Note: num2words US vs. UK disjunct.
     # https://www.merriam-webster.com/dictionary/number#table
     print(num2words(possible_combinations_of_letters).capitalize())
     return entropy_bits
 
 
-# How long would it take to exhaust the search space for a given number of possible password
-# combinations and a given rate of password hashing.
-# Regarding the assumed rate of password hashing, one benchmark, 350 billion per second, 
-# might be taken from this old blog post: https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
+"""
+How long would it take to exhaust the search space for a given number of possible password
+combinations and a given rate of password hashing.
+Regarding the assumed rate of password hashing, one benchmark, 350 billion per second, 
+might be taken from this year 2013 blog post: https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
+"""
 def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billions=350):
     passwords_per_second = passwords_per_sec_billions * 1000000000
     seconds_to_exhaust = possible_combinations / passwords_per_second
@@ -294,19 +277,22 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
 
 # https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
 # validate user-supplied arguments
-# validate maxwordlen, the maximum number of characters in words for the word list
+# validate user-specified value for maxwordlen (default = 8), the maximum number of characters in words for the word list; if maxwordlen < 2 the filtered word list might be empty.
 def check_maxwordlen(in_maxwordlen):
     num = int(in_maxwordlen)
-    if num < 2:  # or num > 15:
+    if num < 2:
         raise argparse.ArgumentTypeError('maximum word length must be greater than one')
     return num
 
 
 
 def main(args=sys.argv[1:]):
-    # TODO: add parameter validation.  I.e., no numbers where letters are expected.
+    # TODO: Extend parameter validation.  I.e., no numbers where letters are expected, etc.
     # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
     # TODO: add -v parameter for verbose terminal output; then trim down the default terminal output
+    # TODO: truncate num2words output unless -v is specified
+    # TODO: beautify terminal output
+    # TODO: add silent mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
     # TODO: recovery gracefully if there are zero words in the word list.
 
     # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
@@ -330,7 +316,7 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
     """
     The argparse module has a function called add_arguments() where the type to which the argument 
     should be converted is given. Instead of using the available values, pass a user-defined function 
-    to the add_arguments() function. 
+    to the add_arguments() function to validate the user-submitted parameter value. 
     """
 
     parser.add_argument("-m", "--maxwordlen",
@@ -342,15 +328,18 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
     # to be implemented
     parser.add_argument("-v", "--verbose", action='store_true')
 
+    """
+    This program expects a word list that looks like: wordlists/Collins_Scrabble_Words_2019_with_definitions.txt
+    """
     parser.add_argument("-l", "--wordlist",
-                        help="path to list of words from which to select",
+                        help="path to the list of words from which to select",
                         type=str, default=wordlists[0])
 
     parser.add_argument("-x", "--notcontain",
                         help="words should not contain this single letter",
                         type=str, default=None)
 
-    # Allow --day and --night options, but not together.  This exclusivity is not exactly necessary and subject to refactoring when the code is improved enough to handle independent parameters.
+    # Allow --day and --night options, but not together.  This exclusivity is not exactly necessary and subject to refactoring when the code is improved enough to handle independent, possibly nested parameters.
     group = parser.add_mutually_exclusive_group()
 
     group.add_argument("-s", "--startswith",
@@ -369,10 +358,10 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     print("args = ", args)
 
-    maximum_word_length = args.maxwordlen
-    if int(maximum_word_length) < 2:
-        print("maximum_word_length = ", maximum_word_length)
-        raise argparse.ArgumentError(maximum_word_length,"maxwordlen can't be less than 2")
+    # maximum_word_length = args.maxwordlen
+    # if int(maximum_word_length) < 2:
+    #     print("maximum_word_length = ", maximum_word_length)
+    #     raise argparse.ArgumentError(maximum_word_length,"maxwordlen can't be less than 2")
 
 
     for n in range(0, args.ctpw):
