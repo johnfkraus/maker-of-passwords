@@ -274,7 +274,6 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         get_pw_strength(password)
 
 
-
 # https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
 # validate user-supplied arguments
 # validate user-specified value for maxwordlen (default = 8), the maximum number of characters in words for the word list; if maxwordlen < 2 the filtered word list might be empty.
@@ -285,7 +284,6 @@ def check_maxwordlen(in_maxwordlen):
     return num
 
 
-
 def main(args=sys.argv[1:]):
     # TODO: Extend parameter validation.  I.e., no numbers where letters are expected, etc.
     # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
@@ -294,10 +292,10 @@ def main(args=sys.argv[1:]):
     # TODO: beautify terminal output
     # TODO: add silent mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
     # TODO: recovery gracefully if there are zero words in the word list.
+    # TODO: allow word lists that have only words and no word definitions.
 
     # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
-
 
     # https: // docs.python.org/3/library/argparse.html
     parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http://xkcd.com/936/). 
