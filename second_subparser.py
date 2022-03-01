@@ -28,14 +28,14 @@ def main(args=sys.argv[1:]):
     else:
         # revised version
         parser2 = argparse.ArgumentParser(description='Deployment tool2')
-        subparsers = parser2.add_subparsers()
+        subparsers = parser2.add_subparsers(dest='subparser_name')
 
         # we define just a single positional argument for the 'add' subcommand.
         # subcommands are implicitly mutually exclusive. The only tiny wart is that you need to add the "name" positional parameter to each subparser.
-        add_p = subparsers.add_parser('require', help='require -h')
+        req_p = subparsers.add_parser('require', help='require -h')
         #add_p.add_argument("name")
         # we define only a single positional argument for the 'require' subcommand.
-        add_p.add_argument("--char", help="words must contain this single CHAR")
+        req_p.add_argument("--char", help="words must contain this single CHAR")
 
         #    if you try
         # my_script.py add name upgrade
@@ -43,15 +43,13 @@ def main(args=sys.argv[1:]):
         upg_p = subparsers.add_parser('maxwordlen')
         upg_p.add_argument("--len", help="maximum number of characters in each word")
         
-
         len_p = subparsers.add_parser('length', aliases=['l'])
         len_p.add_argument("--maxwordlen", help="maximum number of characters in each word", type=int, default=8)
         len_p.add_argument("--pwlen", help="maximum number of words in password", type=int, default=6)
 
-
-
         exclude = subparsers.add_parser('exclude')
-        exclude.add_argument("aeiou") 
+        exclude.add_argument("aeiou", help="words must not contain any of the vowels aeiou") 
+        exclude.add_argument("--char", help="words must not contain this single CHAR")
         # now we can call: python second_subparser.py exclude aeiou
         # python second_subparser.py exclude -h
         
@@ -64,8 +62,14 @@ def main(args=sys.argv[1:]):
         # python second_subparser.py l --maxwordlen=5 --pwlen=4
         # NOT: python subparser.py upgrade name --web_port=123
 
-        parsed_args3 = parser2.parse_args(['l', '--maxwordlen=5',  '--pwlen=4'])
-        print (parsed_args3)
+        parsed_args3 = parser2.parse_args('l --maxwordlen=5'.split())
+        # parsed_args3 = parser2.parse_args("l --maxwordlen=5 require --char='t'".split())
+        # parsed_args3 = parser2.parse_args("require --char=t".split())
+        #params = "require --char=t".split()
+        #print("params = ", params)
+        #parsed_args3 = parser2.parse_args(params)
+        # parsed_args3 = parser2.parse_args(['l', '--maxwordlen=5',  '--pwlen=4'])
+        print ("parsed_args3 = ", parsed_args3)
 
 if __name__ == '__main__':
     main()
