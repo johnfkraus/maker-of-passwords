@@ -1,5 +1,5 @@
 # https://stackoverflow.com/questions/11760578/argparse-arguments-nesting
-
+# https://docs.python.org/3/library/argparse.html
 import collections
 import secrets
 import sys, getopt
@@ -32,17 +32,23 @@ def main(args=sys.argv[1:]):
 
         # we define just a single positional argument for the 'add' subcommand.
         # subcommands are implicitly mutually exclusive. The only tiny wart is that you need to add the "name" positional parameter to each subparser.
-        add_p = subparsers.add_parser('add')
-        add_p.add_argument("name")
-        # we define only a single positional argument for the 'add' subcommand.
-        add_p.add_argument("--web_port")
+        add_p = subparsers.add_parser('require', help='require -h')
+        #add_p.add_argument("name")
+        # we define only a single positional argument for the 'require' subcommand.
+        add_p.add_argument("--char", help="words must contain this single CHAR")
 
         #    if you try
         # my_script.py add name upgrade
         # you'll get an error for unrecognized argument "upgrade", since you only defined a single positional argument for the 'add' subcommand.
-        upg_p = subparsers.add_parser('upgrade')
-        upg_p.add_argument("name")
+        upg_p = subparsers.add_parser('maxwordlen')
+        upg_p.add_argument("--len", help="maximum number of characters in each word")
         
+
+        len_p = subparsers.add_parser('length', aliases=['l'])
+        len_p.add_argument("--maxwordlen", help="maximum number of characters in each word", type=int, default=8)
+        len_p.add_argument("--pwlen", help="maximum number of words in password", type=int, default=6)
+
+
 
         exclude = subparsers.add_parser('exclude')
         exclude.add_argument("aeiou") 
@@ -55,8 +61,11 @@ def main(args=sys.argv[1:]):
         # python subparser.py add name --web_port=123
         # OR
         # python subparser.py upgrade name
+        # python second_subparser.py l --maxwordlen=5 --pwlen=4
         # NOT: python subparser.py upgrade name --web_port=123
 
+        parsed_args3 = parser2.parse_args(['l', '--maxwordlen=5',  '--pwlen=4'])
+        print (parsed_args3)
 
 if __name__ == '__main__':
     main()
