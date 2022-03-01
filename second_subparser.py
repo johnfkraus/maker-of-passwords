@@ -42,6 +42,13 @@ def main(args=sys.argv[1:]):
         # you'll get an error for unrecognized argument "upgrade", since you only defined a single positional argument for the 'add' subcommand.
         upg_p = subparsers.add_parser('upgrade')
         upg_p.add_argument("name")
+        
+
+        exclude = subparsers.add_parser('exclude')
+        exclude.add_argument("aeiou") 
+        # now we can call: python second_subparser.py exclude aeiou
+        # python second_subparser.py exclude -h
+        
         parsed_args2 = parser2.parse_args(args2_params)
         print("parsed_args2 = ", parsed_args2)
         # you can run:
@@ -49,6 +56,7 @@ def main(args=sys.argv[1:]):
         # OR
         # python subparser.py upgrade name
         # NOT: python subparser.py upgrade name --web_port=123
+
 
 if __name__ == '__main__':
     main()
