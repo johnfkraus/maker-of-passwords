@@ -14,14 +14,43 @@ from password_strength import PasswordPolicy
 
 def main(args=sys.argv[1:]):
     print("Running...")
-    parser = argparse.ArgumentParser(description='Deployment tool')
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-a', '--add', dest='name_to_add', help='Add a new group or a role to existing group')
-    group.add_argument('-u', '--upgrade', dest='name_to_upgrade', help='Upgrade a group with the new version')
-    parser.add_argument('--web_port', help='Port of the WEB instance that is being added to the group')
+    args1_params = args
+    args2_params = args
 
-    args = parser.parse_args(args)
-    print(args)
+    if False:
+        parser = argparse.ArgumentParser(description='Deployment tool')
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument('-a', '--add', dest='name_to_add', help='Add a new group or a role to existing group')
+        group.add_argument('-u', '--upgrade', dest='name_to_upgrade', help='Upgrade a group with the new version')
+        parser.add_argument('--web_port', help='Port of the WEB instance that is being added to the group')
+
+        args1 = parser.parse_args(args1_params)
+        print("args1 = ", args1)
+
+    else:
+        # revised version
+        parser2 = argparse.ArgumentParser(description='Deployment tool2')
+        subparsers = parser2.add_subparsers()
+
+        # we define just a single positional argument for the 'add' subcommand.
+        # subcommands are implicitly mutually exclusive. The only tiny wart is that you need to add the "name" positional parameter to each subparser.
+        add_p = subparsers.add_parser('add')
+        add_p.add_argument("name")
+        # we define only a single positional argument for the 'add' subcommand.
+        add_p.add_argument("--web_port")
+
+        #    if you try
+        # my_script.py add name upgrade
+        # you'll get an error for unrecognized argument "upgrade", since you only defined a single positional argument for the 'add' subcommand.
+        upg_p = subparsers.add_parser('upgrade')
+        upg_p.add_argument("name")
+        args2 = parser2.parse_args(args2_params)
+        print("args2 = ", args2)
+        # you can run:
+        # python subparser.py add name --web_port=123
+        # OR
+        # python subparser.py upgrade name
+        # NOT: python subparser.py upgrade name --web_port=123
 
 if __name__ == '__main__':
     main()
@@ -41,6 +70,7 @@ Something like:
 
 parser = argparse.ArgumentParser(description='Deployment tool')
 subparsers = parser.add_subparsers()
+
 
 add_p = subparsers.add_parser('add')
 add_p.add_argument("name")
