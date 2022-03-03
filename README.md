@@ -1,11 +1,16 @@
 # maker-of-passwords [work in process]
 
 A password generator inspired by [xkcd](http://xkcd.com/936/).
+Generates passwords by combining randomly-selected words from a Scrabble word list.
 Supplies word definitions as an aid to memory.
 Calculates password entropy metrics.
-Helps you win at Scrabble.
+Helps you learn new words to win at Scrabble.
 
-![image info](password_strength.png)
+You can specify parameters to filter the word list to satisfy certain Scrabble use cases (at the possible expense of password strength/entropy).  For example, you can generate passwords from the set of words that contain 'q' without 'u', that contain now vowels (i.e., aeiou), or no consonants (pending implementation).
+
+This program is in development.  It is incomplete as of 3/3/22.
+
+![xkcd password strength cartoon](password_strength.png)
 
 ## To run this project
 You must have python3 and pip3 installed.  How to tell?
@@ -31,53 +36,30 @@ pip install -r requirements.txt
 python xkdc.py -h
 python xkdc.py
 ```
-For best results, run this program on an air-gapped system inside a poorly-lit Faraday cage.
+Where the greatest level of security is desired, run this program on an air-gapped system inside a poorly-lit Faraday cage.  Connecting to a network and potential exposure to other types of surveillance raise the possibility that an unwanted observer is watching you create passwords.  
 
-### Python secrets module
 
-This program's random word selection depends on the python secrets module.  Excerpts from the documentation follow.
+#### Python secrets module
 
-Some of the documentation copied and pasted below does not relate directly to this program, but might pertain to future development.
+This program's random word selection depends on the python secrets module.  Excerpts from the Python secrets modle documentation follow.
 
 The secrets module is used for generating cryptographically strong random numbers suitable for managing data such as passwords, account authentication, security tokens, and related secrets.
 
 In particular, secrets should be used in preference to the default pseudo-random number generator in the random module, which is designed for modelling and simulation, not security or cryptography.
 
-#### Another xkcd password generator; I haven't yet examined it closely or stolen from it yet.
+#### Another xkcd password generator; I haven't yet examined it closely or stolen anything from it -- yet.
 https://github.com/redacted/XKCD-password-generator
 
 #### Interesting-looking research on passwords that I haven't read yet:
 
 https://downloads.hindawi.com/journals/scn/2018/6160125.pdf
 
-#### A description of how passwords might be attacked:
+#### A description of how passwords might be attacked from back in 2013:
 https://pthree.org/2013/04/16/password-attacks-part-i-the-brute-force-attack/
 
-#### Words with no vowels
+#### Disorganized notes and copy-pasted stuff follows.
 
-https://regex101.com/r/IWvdVF/1/
-
-import re
-
-#Check if the string starts with "The" and ends with "Spain":
-
-txt = "The rain in Spain"
-x = re.search("^The.*Spain$", txt)
-
-# \b[bcdfghjklmnpqrstvwxyz]+\b
-
-if x:
-  print("YES! We have a match!")
-else:
-  print("No match")
-
-
-
-
-
-
-
-## Disorganized notes and copy-pasted stuff follows.
+Some of the snippets pasted below might not relate directly to this program in its current state, but might pertain to future development.
 
 See also PEP 506
 
