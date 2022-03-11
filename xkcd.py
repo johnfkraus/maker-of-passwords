@@ -259,14 +259,22 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         password = ''
         words = create_wordlist_with_defns(filename, numbered_list,
                                 maximum_word_length, contains, words_start_with, notcontain=notcontain, args=args)
+
+        # randomly select words for password
         for i in range(num_words_in_password):
             pwlist.append(secrets.choice(words))
 
         for i in range(len(pwlist)):
             password = password + pwlist[i][0].strip().lower() + ' '
             password = password.lower()
+            password_wo_delimiters = password.replace(" ","")
+            password_len_wo_delimiters = len(password_wo_delimiters)
 
         print(">>> password = ", password, "<<<")
+
+        print(len(pwlist), "words;", password_len_wo_delimiters, "characters without delimiters.")
+
+        # print words and definitions
         for i in range(len(pwlist)):
             print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
 
