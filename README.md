@@ -8,7 +8,7 @@ Helps you learn new words to win at Scrabble.
 
 You can specify parameters to filter the word list to satisfy certain Scrabble use cases (at the possible expense of password strength/entropy).  For example, you can generate passwords from the set of words that contain 'q' without 'u', that contain now vowels (i.e., aeiou), or no consonants (pending implementation).
 
-This program is in development.  It is incomplete as of 3/3/22.
+This program is in development.  It is very much incomplete as of 3/3/22.  Even the documentation is in disarray.  Sorry.  I will fix it all soon.
 
 ![xkcd password strength cartoon](password_strength.png)
 
