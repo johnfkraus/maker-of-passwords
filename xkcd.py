@@ -3,6 +3,7 @@ import secrets
 import sys, getopt
 import math
 import re
+import logging as log
 import argparse
 from num2words import num2words
 from typing_extensions import final
@@ -302,6 +303,9 @@ def main(args=sys.argv[1:]):
     # TODO: recovery gracefully if there are zero words in the word list.
     # TODO: allow word lists that have only words and no word definitions.
 
+
+    log.basicConfig(level=log.INFO)
+
     # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
@@ -362,7 +366,7 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     args = parser.parse_args(args)
 
-    print("args = ", args)
+    log.info("args = " + str(args) )
 
     # maximum_word_length = args.maxwordlen
     # if int(maximum_word_length) < 2:
@@ -372,7 +376,7 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     for n in range(0, args.ctpw):
         if (args.ctpw > 1):
-            print("========Generated password #", n + 1, "========")
+            log.info("========Generated password #" + str(n + 1) + "========")
 
         create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain, args=args)
