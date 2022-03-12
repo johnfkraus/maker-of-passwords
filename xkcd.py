@@ -49,10 +49,10 @@ def print_formatted_label(inlabel, value, parameter=None):
     if parameter:
         label  =  inlabel + " (" + str(parameter) + ")"
         # print("65, length of label = ", len(label))
-        print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
+        log.info(label.ljust(ljust_width) + " = " + ("{:,}".format(value)).rjust(8))
     else:
         label = inlabel
-        print(label.ljust(ljust_width), " = ", ("{:,}".format(value)).rjust(8))
+        log.info(label.ljust(ljust_width) + " = " + ("{:,}".format(value)).rjust(8))
 
 
 def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_length=100,
@@ -120,7 +120,7 @@ def create_wordlist_with_defns(filename, numbered_list=False, maximum_word_lengt
             for pass_def in templist_notcontain:
                 if pass_def[0][0] == words_start_with:
                     templist_words_start_with.append(pass_def)
-            print("len templist_notcontain (", notcontain, ") = ",
+            log.info("len templist_notcontain (" + notcontain + ") = " +
                   len(templist_notcontain))
             final_word_list = templist_words_start_with
 
@@ -133,10 +133,10 @@ def get_pw_strength(password):
     # assume no spaces or other delimiters between words in password
     password = password.replace(" ","")
     stats = PasswordStats(password)
-    print("==== Metrics from the external password_strength library====")
-    print(password, "entropy bits = ", round(stats.entropy_bits),"entropy density = ", stats.entropy_density,"strength = ", stats.strength())
-    print("alphabet = ", stats.alphabet)
-    print("alphabet_cardinality = ", stats.alphabet_cardinality)
+    log.info("==== Metrics from the external password_strength library====")
+    log.info(password + "entropy bits = " + str(round(stats.entropy_bits)) + "entropy density = " + str(stats.entropy_density) + "strength = " + str(stats.strength()))
+    log.info("alphabet = " + str(stats.alphabet))
+    log.info("alphabet_cardinality = " + str(stats.alphabet_cardinality))
     print("char_categories = ", stats.char_categories)
     print("char_categories_detailed = ", stats.char_categories_detailed)
     print("combinations = ", "{:,}".format(stats.combinations), ", digits = ", len(str(stats.combinations)))
@@ -149,10 +149,10 @@ def get_entropy_bits_based_on_alphabet_length(generated_password, alpha_len):
     password_len = len(generated_password)
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-    print("Possible_combinations of letters using a", alpha_len, "-character set and a password of", password_len, "letters (ignoring xkcd process) = ", "{:,}".format(possible_combinations_of_letters), "or", bin(possible_combinations_of_letters), ", entropy bits = ", entropy_bits)
+    log.info("Possible_combinations of letters using a" + str(alpha_len) + "-character set and a password of" + str(password_len) + "letters (ignoring xkcd process) = "+  "{:,}".format(possible_combinations_of_letters) + "or" + bin(possible_combinations_of_letters) + ", entropy bits = " + str(entropy_bits))
     # Note: num2words US vs. UK disjunct.
     # https://www.merriam-webster.com/dictionary/number#table
-    print(num2words(possible_combinations_of_letters).capitalize())
+    log.info(num2words(possible_combinations_of_letters).capitalize())
     return entropy_bits
 
 
@@ -166,10 +166,10 @@ def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billio
     passwords_per_second = passwords_per_sec_billions * 1000000000
     seconds_to_exhaust = possible_combinations / passwords_per_second
     if seconds_to_exhaust < 1.0:
-        print("Less than one second required to exhaust search space at a rate of ", passwords_per_sec_billions, "billion passwords per second.")
+        log.info("Less than one second required to exhaust search space at a rate of " + str(passwords_per_sec_billions) + "billion passwords per second.")
     else:
-        print("Time to exhaust search space = ", display_time(
-            seconds_to_exhaust, granularity=1), " at ", passwords_per_sec_billions, "billion passwords per second.")
+        log.info("Time to exhaust search space = " + display_time(
+            seconds_to_exhaust, granularity=1) + " at " + str(passwords_per_sec_billions) + "billion passwords per second.")
     return seconds_to_exhaust
 
 
@@ -238,11 +238,11 @@ def get_xkcd_entropy(words, num_words_in_password):
     word_list_length = len(words)
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
-    print("Number of possible combinations of words = ", "{:,}".format(possible_combinations), " or ", bin(possible_combinations))
-    print("# of decimal digits = ", len(str(possible_combinations)))
-    print(num2words(possible_combinations).capitalize())
+    log.info("Number of possible combinations of words = " + "{:,}".format(possible_combinations) + " or " + bin(possible_combinations))
+    print("# of decimal digits = " + str(len(str(possible_combinations))))
+    log.info(num2words(possible_combinations).capitalize())
     time_to_exhaust_search_space(possible_combinations)
-    print("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
+    log.info("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
 
 
 def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_definitions.txt",
