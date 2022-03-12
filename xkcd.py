@@ -166,10 +166,10 @@ def time_to_exhaust_search_space(possible_combinations, passwords_per_sec_billio
     passwords_per_second = passwords_per_sec_billions * 1000000000
     seconds_to_exhaust = possible_combinations / passwords_per_second
     if seconds_to_exhaust < 1.0:
-        log.info("Less than one second required to exhaust search space at a rate of " + str(passwords_per_sec_billions) + "billion passwords per second.")
+        log.info("Less than one second required to exhaust search space at a rate of " + str(passwords_per_sec_billions) + " billion passwords per second.")
     else:
         log.info("Time to exhaust search space = " + display_time(
-            seconds_to_exhaust, granularity=1) + " at " + str(passwords_per_sec_billions) + "billion passwords per second.")
+            seconds_to_exhaust, granularity=1) + " at " + str(passwords_per_sec_billions) + " billion passwords per second.")
     return seconds_to_exhaust
 
 
@@ -238,8 +238,8 @@ def get_xkcd_entropy(words, num_words_in_password):
     word_list_length = len(words)
     possible_combinations = int(math.pow(word_list_length,num_words_in_password))
     entropy_bits = math.ceil(math.log(possible_combinations,2))
-    log.info("Number of possible combinations of words = " + "{:,}".format(possible_combinations) + " or " + bin(possible_combinations))
-    print("# of decimal digits = " + str(len(str(possible_combinations))))
+    log.info("Number of possible combinations of words = " + "{:,}".format(possible_combinations) + " (" + str(len(str(possible_combinations))) +  " decimal digits) or " + bin(possible_combinations) + " (" + str(len(str(bin(possible_combinations)) )  -2 ) + " binary digits)")
+    # print("# of binary digits = " + str(len(str(bin(possible_combinations)) )  -2 ))
     log.info(num2words(possible_combinations).capitalize())
     time_to_exhaust_search_space(possible_combinations)
     log.info("entropy bits based on no. of possible word combinations = " + str(entropy_bits))
@@ -271,13 +271,13 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
             password_wo_delimiters = password.replace(" ","")
             password_len_wo_delimiters = len(password_wo_delimiters)
 
-        print(">>> password = ", password, "<<<")
+        log.info(">>> password = " + password + " <<<")
 
-        print(len(pwlist), "words;", password_len_wo_delimiters, "characters without delimiters.")
+        log.info(str(len(pwlist)) + " words; " + str(password_len_wo_delimiters) + " characters without delimiters.")
 
         # print words and definitions
         for i in range(len(pwlist)):
-            print(str(i + 1), pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
+            log.info(str(i + 1) + ". " + pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
 
         get_xkcd_entropy(words, num_words_in_password)
         get_pw_strength(password)
@@ -302,11 +302,12 @@ def main(args=sys.argv[1:]):
     # TODO: add silent mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
     # TODO: recovery gracefully if there are zero words in the word list.
     # TODO: allow word lists that have only words and no word definitions.
+    # TODL: delete unused methods
 
 
     log.basicConfig(level=log.INFO)
 
-    # Why is 'wordlists' a list?  You might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
+    # Why is 'wordlists' a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
     # https: // docs.python.org/3/library/argparse.html
