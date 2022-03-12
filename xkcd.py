@@ -37,7 +37,7 @@ def create_wordlist_profile(filename): #, numbered_list=False, maximum_word_leng
             return
         total_words = total_words + worddict[key]
         cumulative_words = cumulative_words + worddict[key]
-        print(key, " : ", worddict[key], " cumul: ", cumulative_words)
+        log.info(key + " : " + worddict[key] + " cumul: " + cumulative_words)
     #print("Total words in sortedworddict: ", total_words)
     print_formatted_label("Total words in sortedworddict: ", total_words)
 
