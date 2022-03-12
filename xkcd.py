@@ -134,14 +134,14 @@ def get_pw_strength(password):
     password = password.replace(" ","")
     stats = PasswordStats(password)
     log.info("==== Metrics from the external password_strength library====")
-    log.info(password + "entropy bits = " + str(round(stats.entropy_bits)) + "entropy density = " + str(stats.entropy_density) + "strength = " + str(stats.strength()))
+    log.info(password + ": entropy bits = " + str(round(stats.entropy_bits)) + "; entropy density = " + str(stats.entropy_density) + "; strength = " + str(stats.strength()))
     log.info("alphabet = " + str(stats.alphabet))
     log.info("alphabet_cardinality = " + str(stats.alphabet_cardinality))
     print("char_categories = ", stats.char_categories)
     print("char_categories_detailed = ", stats.char_categories_detailed)
     print("combinations = ", "{:,}".format(stats.combinations), ", digits = ", len(str(stats.combinations)))
     print("entropy_density = ", stats.entropy_density)
-    print("26 lower-case letter entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
+    print("26 lower-case-letter-based entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
 
 # instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
 # how many binary digits are required to encode the number of combinations
@@ -271,6 +271,8 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
             password_wo_delimiters = password.replace(" ","")
             password_len_wo_delimiters = len(password_wo_delimiters)
 
+        password = password.strip()
+
         log.info(">>> password = " + password + " <<<")
 
         log.info(str(len(pwlist)) + " words; " + str(password_len_wo_delimiters) + " characters without delimiters.")
@@ -281,6 +283,7 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
 
         get_xkcd_entropy(words, num_words_in_password)
         get_pw_strength(password)
+        return password
 
 
 # https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
@@ -374,13 +377,19 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
     #     print("maximum_word_length = ", maximum_word_length)
     #     raise argparse.ArgumentError(maximum_word_length,"maxwordlen can't be less than 2")
 
+    passwords = []
 
     for n in range(0, args.ctpw):
         if (args.ctpw > 1):
             log.info("========Generated password #" + str(n + 1) + "========")
 
-        create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
+        pw = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
                                          maximum_word_length=args.maxwordlen, contains=args.contains, notcontain=args.notcontain, args=args)
+        pw = pw.replace(" ","")
+        passwords.append(pw)
+
+    log.info("returning: " + str(passwords))
+    return passwords
 
 
 if __name__ == '__main__':
