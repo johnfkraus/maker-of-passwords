@@ -307,8 +307,8 @@ def main(args=sys.argv[1:]):
     # TODO: allow word lists that have only words and no word definitions.
     # TODL: delete unused methods
 
+    # log.basicConfig(level=log.INFO)
 
-    log.basicConfig(level=log.INFO)
 
     # Why is 'wordlists' a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
@@ -317,6 +317,11 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http://xkcd.com/936/). 
     Generates passwords by drawing English words randomly from a Scrabble word list, subject to your optional custom parameters.  Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.\n
 Warning: this program is incomplete. Not all functionality is enabled. Little testing has been done. Passwords composed of multiple lower-case dictionary words are displayed with space delimiters for legibility but are assumed to be concatenated with no delimiters between the words for entropy calculations.""")
+
+    # to be implemented
+    parser.add_argument("-v", "--verbose", action='store_true')
+
+
 
     parser.add_argument("-t", "--ctpw",
                         help="number of passwords to generate, default=1",
@@ -339,8 +344,9 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     parser.add_argument('--noaeiou', action='store_true')
 
-    # to be implemented
-    parser.add_argument("-v", "--verbose", action='store_true')
+
+
+
 
     """
     This program expects a word list that looks like: wordlists/Collins_Scrabble_Words_2019_with_definitions.txt
@@ -370,6 +376,15 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     args = parser.parse_args(args)
 
+    if (args.verbose == True):
+        log.info(">>>>>>>>VERBOSE>>>")
+        log.basicConfig(level=log.WARNING)
+    else:
+        log.basicConfig(level=log.INFO)
+
+
+
+
     log.info("args = " + str(args) )
 
     # maximum_word_length = args.maxwordlen
@@ -378,6 +393,10 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
     #     raise argparse.ArgumentError(maximum_word_length,"maxwordlen can't be less than 2")
 
     passwords = []
+
+    # if (args.)
+
+
 
     for n in range(0, args.ctpw):
         if (args.ctpw > 1):
