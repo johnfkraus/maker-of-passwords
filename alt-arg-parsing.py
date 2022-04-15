@@ -1,5 +1,7 @@
 import plac
 
+# https://stackoverflow.com/questions/20063/whats-the-best-way-to-parse-command-line-arguments
+
 def main(excel_file_path: "Path to input training file.",
          excel_sheet_name: "Name of the excel sheet containing training data including columns 'Label' and 'Description'.",
          existing_model_path: "Path to an existing model to refine." = None,
