@@ -5,3 +5,4 @@ num2words==0.5.10
 password-strength==0.0.3.post2
 six==1.16.0
 typing_extensions==4.0.1
+pyjwt>=2.4.0
