@@ -142,7 +142,8 @@ def get_pw_strength(password):
     print("combinations = ", "{:,}".format(stats.combinations), ", digits = ", len(str(stats.combinations)))
     print("entropy_density = ", stats.entropy_density)
     # print("144 26 lower-case-letter-based entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
-    print("26-lower-case-letter-based entropy bit password strength = ", get_entropy_bits_based_on_alphabet_length2(password, 26))
+    print("26-lower-case-letter-based entropy bit password strength = ",
+          get_entropy_bits_based_on_alphabet_length2(password, 26))
 
 
 # # instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
@@ -316,8 +317,9 @@ def main(args=sys.argv[1:]):
     # TODO: beautify terminal output
     # TODO: add silent/quiet mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
     # TODO: recovery gracefully if there are zero words in the word list.
-    # TODO: allow word lists that have only words and no word definitions.
-    # TODL: delete unused methods
+    # TODO: allow user option for word lists that have only words and no word definitions.
+    # TODO: use a text config file for default settings, such as word length, password length.
+    # TODO: delete unused methods
 
     # log.basicConfig(level=log.INFO)
 
@@ -348,7 +350,7 @@ Warning: this program is incomplete. Not all functionality is enabled. Little te
 
     parser.add_argument("-m", "--maxwordlen",
                         help="max number of characters per word, default=8",
-                        type=check_maxwordlen, default=8)
+                        type=check_maxwordlen, default=7)
 
     parser.add_argument('--noaeiou', action='store_true')
 
