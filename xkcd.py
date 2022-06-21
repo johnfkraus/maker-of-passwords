@@ -10,6 +10,7 @@ from typing_extensions import final
 from clint.textui import puts, indent, colored
 from password_strength import PasswordStats
 from password_strength import PasswordPolicy
+from pw_strength.stats import get_entropy_bits_based_on_alphabet_length2
 
 # todo: add no-vowels functionality (in progress)
 # todo: add no-consonants functionality
@@ -140,23 +141,24 @@ def get_pw_strength(password):
     print("char_categories_detailed = ", stats.char_categories_detailed)
     print("combinations = ", "{:,}".format(stats.combinations), ", digits = ", len(str(stats.combinations)))
     print("entropy_density = ", stats.entropy_density)
-    print("26 lower-case-letter-based entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
+    # print("144 26 lower-case-letter-based entropy bits = ", get_entropy_bits_based_on_alphabet_length(password, 26))
+    print("26-lower-case-letter-based entropy bit password strength = ", get_entropy_bits_based_on_alphabet_length2(password, 26))
 
 
-# instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
-# how many binary digits are required to encode the number of combinations
-def get_entropy_bits_based_on_alphabet_length(generated_password, alpha_len):
-    password_len = len(generated_password)
-    possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
-    entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-    log.info("Possible_combinations of letters using a" + str(alpha_len) + "-character set and a password of" + str(
-        password_len) + "letters (ignoring xkcd process) = " + "{:,}".format(
-        possible_combinations_of_letters) + "or" + bin(possible_combinations_of_letters) + ", entropy bits = " + str(
-        entropy_bits))
-    # Note: num2words US vs. UK disjunct.
-    # https://www.merriam-webster.com/dictionary/number#table
-    log.info(num2words(possible_combinations_of_letters).capitalize())
-    return entropy_bits
+# # instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
+# # how many binary digits are required to encode the number of combinations
+# def get_entropy_bits_based_on_alphabet_length(generated_password, alpha_len):
+#     password_len = len(generated_password)
+#     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
+#     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
+#     log.info("Possible_combinations of letters using a" + str(alpha_len) + "-character set and a password of" + str(
+#         password_len) + "letters (ignoring xkcd process) = " + "{:,}".format(
+#         possible_combinations_of_letters) + "or" + bin(possible_combinations_of_letters) + ", entropy bits = " + str(
+#         entropy_bits))
+#     # Note: num2words US vs. UK disjunct.
+#     # https://www.merriam-webster.com/dictionary/number#table
+#     log.info(num2words(possible_combinations_of_letters).capitalize())
+#     return entropy_bits
 
 
 """
@@ -302,7 +304,7 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
 def check_maxwordlen(in_maxwordlen):
     num = int(in_maxwordlen)
     if num < 2:
-        raise argparse.ArgumentTypeError('maximum word length must be greater than one')
+        raise argparse.ArgumentTypeError('maximum word length must be greater than one character')
     return num
 
 
@@ -312,14 +314,14 @@ def main(args=sys.argv[1:]):
     # TODO: add -v parameter for verbose terminal output; then trim down the default terminal output
     # TODO: truncate num2words output unless -v is specified
     # TODO: beautify terminal output
-    # TODO: add silent mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
+    # TODO: add silent/quiet mode that just returns the generated password as a string and emits no terminal output in the absence of errors.
     # TODO: recovery gracefully if there are zero words in the word list.
     # TODO: allow word lists that have only words and no word definitions.
     # TODL: delete unused methods
 
     # log.basicConfig(level=log.INFO)
 
-    # Why is 'wordlists' a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
+    # Why is the 'wordlists' parameter a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
 
     # https: // docs.python.org/3/library/argparse.html
