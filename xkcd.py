@@ -18,7 +18,10 @@ from pw_strength.stats import get_entropy_bits_based_on_alphabet_length2
 
 ljust_width = 55  # formatting param for printing strings to terminal
 
-hello
+# hello
+
+stats_dict = {}
+#stats_list = []
 
 
 # method to explore word list; informational only; has no effect on password selection; work in process
@@ -192,6 +195,10 @@ def display_time(seconds, granularity=2):
 
     for name, count in intervals:
         value = seconds // count
+        """
+        The double forward slash in Python is the integer division operator, which will divide 
+        the left operand by the right, and only keep the whole number component.
+        """
         if value:
             seconds -= value * count
             if value == 1:
@@ -256,13 +263,13 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
     with open(filename) as f:
         pwlist = []
         password = ''
-        words = create_wordlist_with_defns(filename, numbered_list,
-                                           maximum_word_length, contains, words_start_with, notcontain=notcontain,
-                                           args=args)
+        word_list = create_wordlist_with_defns(filename, numbered_list,
+                                               maximum_word_length, contains, words_start_with, notcontain=notcontain,
+                                               args=args)
 
         # randomly select words for password
         for i in range(num_words_in_password):
-            pwlist.append(secrets.choice(words))
+            pwlist.append(secrets.choice(word_list))
 
         for i in range(len(pwlist)):
             password = password + pwlist[i][0].strip().lower() + ' '
@@ -280,9 +287,12 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         for i in range(len(pwlist)):
             log.info(str(i + 1) + ". " + pwlist[i][0].strip() + ' -- ' + pwlist[i][1].strip())
 
-        get_xkcd_entropy(words, num_words_in_password)
-        get_pw_strength(password)
+        get_xkcd_entropy(word_list, num_words_in_password)
+        pw_wo_delimiters = password.replace(" ", "")
+        get_pw_strength(pw_wo_delimiters)
+        stats_dict[pw_wo_delimiters] = {}
         return password
+
 
 
 def check_maxwordlen(in_maxwordlen):
@@ -299,6 +309,7 @@ def check_maxwordlen(in_maxwordlen):
 
 
 def main(args=sys.argv[1:]):
+    print('main args = ', args)
     """
     # TODO: Extend parameter validation.  I.e., no numbers where letters are expected, etc.
     # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
@@ -314,8 +325,9 @@ def main(args=sys.argv[1:]):
     # log.basicConfig(level=log.INFO)
 
     # Why is the 'wordlists' parameter a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
-    wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
     """
+    wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
+
     # https: // docs.python.org/3/library/argparse.html
     parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http://xkcd.com/936/). 
     The program generates passwords by drawing English words randomly from a Scrabble word list, 
@@ -327,7 +339,7 @@ def main(args=sys.argv[1:]):
     concatenated with no delimiters.""")
 
     # to be implemented
-    parser.add_argument("-v", "--verbose", action='store_true')
+    parser.add_argument("-v", "--verbose", action='store_false')
 
     parser.add_argument("-t", "--ctpw",
                         help="number of passwords to generate, default=1",
@@ -377,7 +389,7 @@ def main(args=sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    if (args.verbose == True):
+    if args.verbose:
         log.info(">>>>>>>>VERBOSE>>>")
         log.basicConfig(level=log.WARNING)
     else:
@@ -395,7 +407,7 @@ def main(args=sys.argv[1:]):
     # if (args.)
 
     for n in range(0, args.ctpw):
-        if (args.ctpw > 1):
+        if args.ctpw > 1:
             log.info("========Generated password #" + str(n + 1) + "========")
 
         pw = create_xkcd_password(filename=args.wordlist, num_words_in_password=int(args.numwords),
@@ -404,6 +416,8 @@ def main(args=sys.argv[1:]):
         pw = pw.replace(" ", "")
         passwords.append(pw)
 
+    print("stats_dict = ")
+    print(stats_dict)
     log.info("returning: " + str(passwords))
     return passwords
 
