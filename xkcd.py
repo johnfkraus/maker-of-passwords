@@ -1,3 +1,4 @@
+import hello
 import collections
 import secrets
 import sys, getopt
@@ -17,6 +18,7 @@ from pw_strength.stats import get_entropy_bits_based_on_alphabet_length2
 
 ljust_width = 55  # formatting param for printing strings to terminal
 
+hello
 
 # method to explore word list; informational only; has no effect on password selection; work in process
 def create_wordlist_profile(filename):  # , numbered_list=False, maximum_word_length=100,

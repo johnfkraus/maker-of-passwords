@@ -1,4 +1,3 @@
-
 # import secrets
 # import sys, getopt
 import math
@@ -6,15 +5,20 @@ import math
 import logging as log
 # import argparse
 from num2words import num2words
+
+
 # from typing_extensions import final
 # from clint.textui import puts, indent, colored
 # from password_strength import PasswordStats
 # from password_strength import PasswordPolicy
 
 
-# instead of calculating entropy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
-# how many binary digits are required to encode the number of combinations
 def get_entropy_bits_based_on_alphabet_length2(generated_password, alpha_len):
+    """
+    Instead of calculating password entropy based on length of word list and number of
+    words drawn, you can also calculate entropy based on the available characters.
+    How many binary digits are required to encode the number of combinations
+    """
     password_len = len(generated_password)
     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
