@@ -20,6 +20,7 @@ ljust_width = 55  # formatting param for printing strings to terminal
 
 hello
 
+
 # method to explore word list; informational only; has no effect on password selection; work in process
 def create_wordlist_profile(filename):  # , numbered_list=False, maximum_word_length=100,
     # contains=None, words_start_with=None,  words_end_with=None, notcontain=None):
@@ -148,22 +149,6 @@ def get_pw_strength(password):
           get_entropy_bits_based_on_alphabet_length2(password, 26))
 
 
-# # instead of calculating entopy based on length of word list and number of words drawn, you can also calculate entropy based on the available characters.
-# # how many binary digits are required to encode the number of combinations
-# def get_entropy_bits_based_on_alphabet_length(generated_password, alpha_len):
-#     password_len = len(generated_password)
-#     possible_combinations_of_letters = int(math.pow(alpha_len, password_len))
-#     entropy_bits = math.ceil(math.log(possible_combinations_of_letters, 2))
-#     log.info("Possible_combinations of letters using a" + str(alpha_len) + "-character set and a password of" + str(
-#         password_len) + "letters (ignoring xkcd process) = " + "{:,}".format(
-#         possible_combinations_of_letters) + "or" + bin(possible_combinations_of_letters) + ", entropy bits = " + str(
-#         entropy_bits))
-#     # Note: num2words US vs. UK disjunct.
-#     # https://www.merriam-webster.com/dictionary/number#table
-#     log.info(num2words(possible_combinations_of_letters).capitalize())
-#     return entropy_bits
-
-
 """
 How long would it take to exhaust the search space for a given number of possible password
 combinations and a given rate of password hashing.
@@ -214,7 +199,6 @@ def display_time(seconds, granularity=2):
             value = "{:,}".format(value)
             result.append("{} {}".format(value, name))
 
-    # return ', '.join(result[:granularity])
     return ', '.join(result[:granularity])
 
 
@@ -301,10 +285,13 @@ def create_xkcd_password(filename="wordlists/Collins_Scrabble_Words_2019_with_de
         return password
 
 
-# https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
-# validate user-supplied arguments
-# validate user-specified value for maxwordlen (default = 8), the maximum number of characters in words for the word list; if maxwordlen < 2 the filtered word list might be empty.
 def check_maxwordlen(in_maxwordlen):
+    """
+    Reference: https://www.geeksforgeeks.org/how-to-handle-invalid-arguments-with-argparse-in-python/
+    validate user-specified value for maxwordlen (default = 8), the maximum number of characters
+    in words for the word list; if maxwordlen < 2 the resulting filtered word list might be empty,
+    which is useless for generating passwords..
+    """
     num = int(in_maxwordlen)
     if num < 2:
         raise argparse.ArgumentTypeError('maximum word length must be greater than one character')
@@ -312,6 +299,7 @@ def check_maxwordlen(in_maxwordlen):
 
 
 def main(args=sys.argv[1:]):
+    """
     # TODO: Extend parameter validation.  I.e., no numbers where letters are expected, etc.
     # TODO: parameter values can contain more than one character; i.e., you can specify that more than one letter should not appear in the word list.
     # TODO: add -v parameter for verbose terminal output; then trim down the default terminal output
@@ -327,11 +315,16 @@ def main(args=sys.argv[1:]):
 
     # Why is the 'wordlists' parameter a list?  Because you might have more the one word list option, but mainly this list was for trying different word lists and migrating to a list containing definitions.
     wordlists = ["wordlists/Collins_Scrabble_Words_2019_with_definitions.txt"]
-
+    """
     # https: // docs.python.org/3/library/argparse.html
     parser = argparse.ArgumentParser(description="""A password generator inspired by[xkcd](http://xkcd.com/936/). 
-    Generates passwords by drawing English words randomly from a Scrabble word list, subject to your optional custom parameters.  Supplies word definitions as an aid to memory. Calculates password entropy metrics. Helps you win at Scrabble.\n
-Warning: this program is incomplete. Not all functionality is enabled. Little testing has been done. Passwords composed of multiple lower-case dictionary words are displayed with space delimiters for legibility but are assumed to be concatenated with no delimiters between the words for entropy calculations.""")
+    The program generates passwords by drawing English words randomly from a Scrabble word list, 
+    subject to your optional custom parameters.  Supplies word definitions as an aid to memory. 
+    Calculates password entropy metrics. Helps you win at Scrabble.\n
+    Warning: this program is in development and is not complete. Not all functionality is enabled. 
+    More testing is required.  Passwords composed of multiple lower-case dictionary words are displayed 
+    with space delimiters for legibility.  For entropy calculations we assume that words are 
+    concatenated with no delimiters.""")
 
     # to be implemented
     parser.add_argument("-v", "--verbose", action='store_true')
