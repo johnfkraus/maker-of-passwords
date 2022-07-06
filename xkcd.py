@@ -308,6 +308,31 @@ def check_maxwordlen(in_maxwordlen):
     return num
 
 
+# import argparse
+
+class FooAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values != "bar":
+            print("Got value:", values)
+            raise ValueError("Not a bar!")
+        setattr(namespace, self.dest, values)
+
+
+class MinWordLengthAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if int(values) < 2:   #  "bar":
+            print("Got value:", int(values))
+            raise ValueError("Word length must be > 1!")
+        setattr(namespace, self.dest, int(values))
+
+# parser = argparse.ArgumentParser()
+#parser.add_argument("--foo", action=FooAction)
+
+#parsed_args = parser.parse_args()
+
+
+
+
 def main(args=sys.argv[1:]):
     print('main args = ', args)
     """
@@ -338,8 +363,17 @@ def main(args=sys.argv[1:]):
     with space delimiters for legibility.  For entropy calculations we assume that words are 
     concatenated with no delimiters.""")
 
+    parser.add_argument("--foo", action=FooAction)
+
+
     # to be implemented
-    parser.add_argument("-v", "--verbose", action='store_false')
+    # parser.add_argument("-v", "--verbose", action='store_false')
+    # parser.add_argument("-v", "--verbose")
+    # parser.add_argument("-v", "--verbose", help="increase output verbosity",
+    #                     action="store_true")
+
+    parser.add_argument("-v", "--verbose", help="increase output verbosity",
+                        action="store_true")
 
     parser.add_argument("-t", "--ctpw",
                         help="number of passwords to generate, default=1",
@@ -355,9 +389,12 @@ def main(args=sys.argv[1:]):
     to the add_arguments() function to validate the user-submitted parameter value. 
     """
 
+    # parser.add_argument("-m", "--maxwordlen",
+    #                     help="max number of characters per word",
+    #                     type=check_maxwordlen, default=7, action=MinWordLengthAction)
     parser.add_argument("-m", "--maxwordlen",
-                        help="max number of characters per word, default=8",
-                        type=check_maxwordlen, default=7)
+                        help="max number of characters per word",
+                        default=7, action=MinWordLengthAction)
 
     parser.add_argument('--noaeiou', action='store_true')
 
@@ -390,12 +427,14 @@ def main(args=sys.argv[1:]):
     args = parser.parse_args(args)
 
     if args.verbose:
-        log.info(">>>>>>>>VERBOSE>>>")
-        log.basicConfig(level=log.WARNING)
-    else:
-        log.basicConfig(level=log.INFO)
 
-    log.info("args = " + str(args))
+        log.basicConfig(level=log.INFO)
+        log.info(">>>>>>>>VERBOSE>>>")
+        log.info("args = " + str(args))
+        # print(">>>>>>>>VERBOSE>>>")
+    else:
+        log.basicConfig(level=log.WARNING)
+
 
     # maximum_word_length = args.maxwordlen
     # if int(maximum_word_length) < 2:
