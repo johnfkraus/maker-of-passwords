@@ -331,8 +331,6 @@ class MinWordLengthAction(argparse.Action):
 #parsed_args = parser.parse_args()
 
 
-
-
 def main(args=sys.argv[1:]):
     print('main args = ', args)
     """
@@ -364,13 +362,6 @@ def main(args=sys.argv[1:]):
     concatenated with no delimiters.""")
 
     parser.add_argument("--foo", action=FooAction)
-
-
-    # to be implemented
-    # parser.add_argument("-v", "--verbose", action='store_false')
-    # parser.add_argument("-v", "--verbose")
-    # parser.add_argument("-v", "--verbose", help="increase output verbosity",
-    #                     action="store_true")
 
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
